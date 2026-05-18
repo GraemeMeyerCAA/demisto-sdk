@@ -93,7 +93,14 @@ def test_return_raw_outputs_from_log_also_write_log(
         runner = Runner("Query", debug_path=temp_path, json_to_outputs=True)
         temp = runner._return_context_dict_from_log(["123"])
         assert temp == expected_output
-        assert filecmp.cmp(file_path, temp_path)
+        # Compare text content rather than bytes: on Windows the Runner
+        # writes via text-mode handles which translate \n -> \r\n, while
+        # the source file has unix line endings.
+        with open(file_path, "r", encoding="utf-8") as f:
+            src = f.read()
+        with open(temp_path, "r", encoding="utf-8") as f:
+            dst = f.read()
+        assert src == dst
     finally:
         try:
             os.unlink(temp_path)
