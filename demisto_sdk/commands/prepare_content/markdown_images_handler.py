@@ -281,7 +281,9 @@ def process_markdown_images(
                 path_obj = Path(original_path)
 
             image_name = path_obj.name
-            new_replace_url = os.path.join(to_replace, file_type.value, image_name)
+            # `to_replace` is a URL / storage-path, not a host filesystem path,
+            # so it must use `/` regardless of platform.
+            new_replace_url = f"{to_replace}/{file_type.value}/{image_name}"
             lines[i] = line.replace(original_path, new_replace_url)
             logger.debug(f"Replacing {original_path=} with new url {new_replace_url=}")
 

@@ -131,8 +131,8 @@ class TestIniFile(FileTesting):
             actual_file_content = IniFile.read_from_github_api(path)
             # make sure that the URL is sent correctly
             assert (
-                f"{DEMISTO_GIT_PRIMARY_BRANCH}{path}"
-                in requests_mocker.call_args.args[0]
+                f"{DEMISTO_GIT_PRIMARY_BRANCH}/{Path(path).as_posix()}"
+                in requests_mocker.call_args.args[0].replace("\\", "/")
             )
             assert actual_file_content.sections()
 

@@ -134,8 +134,10 @@ def normalize_pack_name(message: str) -> str:
     """
     Normalizes dynamically generated pack directory names like 'pack_123'
     into a static placeholder 'PACK_NAME' so tests remain deterministic.
+    Also normalises Windows backslashes to forward slashes so the same
+    expected_msgs strings work on Linux and Windows.
     """
-    return re.sub(r"pack_\d+", "PACK_NAME", message)
+    return re.sub(r"pack_\d+", "PACK_NAME", message).replace("\\", "/")
 
 
 @pytest.mark.parametrize(

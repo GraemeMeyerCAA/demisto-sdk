@@ -470,7 +470,11 @@ class PackUniqueFilesValidator(BaseValidator):
         )
 
     def _is_empty_dir(self, dir_path: Path) -> bool:
-        return dir_path.stat().st_size == 0
+        # `stat().st_size` reports the size of the directory inode entries on
+        # some POSIX filesystems (often non-zero when populated) but is always
+        # 0 on NTFS regardless of contents - so the previous check reported
+        # every directory as "empty" on Windows.
+        return not any(dir_path.iterdir())
 
     def _is_integration_pack(self):
         integration_dir: Path = Path(self.pack_path) / INTEGRATIONS_DIR

@@ -1,8 +1,23 @@
 from pathlib import Path
 
+import docker
 import dotenv
 import pytest
 from lxml import etree
+
+
+def _docker_daemon_reachable() -> bool:
+    try:
+        docker.from_env(timeout=1).ping()
+        return True
+    except Exception:
+        return False
+
+
+requires_docker = pytest.mark.skipif(
+    not _docker_daemon_reachable(),
+    reason="requires a running Docker daemon",
+)
 
 import demisto_sdk.commands.content_graph.objects.content_item as content_item
 import demisto_sdk.commands.setup_env.setup_environment as setup_environment
@@ -18,6 +33,7 @@ from demisto_sdk.commands.setup_env.setup_environment import (
 TESTS_DATA_DIR = Path(__file__).parent / "tests_data"
 
 
+@requires_docker
 @pytest.mark.parametrize("create_virtualenv", [False, True])
 def test_setup_env_vscode(mocker, monkeypatch, pack, create_virtualenv):
     """

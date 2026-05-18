@@ -1,5 +1,6 @@
 import glob
 import os
+import platform
 import shutil
 from configparser import ConfigParser
 from pathlib import Path
@@ -788,7 +789,10 @@ class TestGetFilesInDir:
         assert sorted(get_files_in_dir(pack_dir, ["py"])) == sorted(files)
 
 
-run_command_os_inputs = [("ls", os.getcwd()), ("ls", Path(os.getcwd()))]
+# `run_command_os` shells out to a real binary; `dir` is a cmd-builtin not an
+# executable, so on Windows we use `cmd /c dir`. POSIX uses `ls` as before.
+_ls_cmd = "cmd /c dir" if platform.system() == "Windows" else "ls"
+run_command_os_inputs = [(_ls_cmd, os.getcwd()), (_ls_cmd, Path(os.getcwd()))]
 
 
 @pytest.mark.parametrize("command, cwd", run_command_os_inputs)
@@ -3116,6 +3120,11 @@ def test_find_pack_folder(input_path, expected_output):
         ),
         (Path("/User/username/content/Packs"), Path("/User/username/content")),
     ],
+)
+@pytest.mark.skipif(
+    platform.system() == "Windows",
+    reason="POSIX-style absolute paths in the parametrise resolve to "
+    "C:\\User\\... on Windows, defeating the point of the test",
 )
 def test_get_content_path(input_path, expected_output):
     """

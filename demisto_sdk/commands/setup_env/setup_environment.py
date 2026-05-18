@@ -257,7 +257,8 @@ def update_pycharm_config_xml_data(
         etree.SubElement(
             module_root_manager_content_data,
             "sourceFolder",
-            url=f"{url_prefix}/{python_path_relative}",
+            # PyCharm .iml URLs use forward-slash regardless of host OS.
+            url=f"{url_prefix}/{python_path_relative.as_posix()}",
             isTestSource="false",
         )
         added_entries_count += 1

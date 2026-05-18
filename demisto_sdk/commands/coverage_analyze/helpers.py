@@ -32,7 +32,11 @@ def fix_file_path(coverage_file: str, code_file_absolute_path: str):
         but our tests (pytest step) are running inside a docker container.
         so we have to change the path to the correct one.
     """
-    with sqlite3.connect(coverage_file) as sql_connection:
+    # sqlite3.connect()'s context manager only commits/rollbacks; it does NOT
+    # close the connection. On Windows that keeps a file handle open and the
+    # subsequent unlink() below raises WinError 32. Close explicitly.
+    sql_connection = sqlite3.connect(coverage_file)
+    try:
         cursor = sql_connection.cursor()
         index = cursor.execute("SELECT count(*) FROM file").fetchall()[0][0]
         if not index == 1:
@@ -43,6 +47,8 @@ def fix_file_path(coverage_file: str, code_file_absolute_path: str):
             )
             sql_connection.commit()
         cursor.close()
+    finally:
+        sql_connection.close()
     if not index == 1:
         logger.debug(f"removing coverage report for {code_file_absolute_path}")
         Path(coverage_file).unlink()
@@ -90,10 +96,12 @@ def coverage_files() -> Iterable[str]:
     iterate over the '.coverage' files in the repo.
     """
     packs_path = CONTENT_PATH / "Packs"
+    # Use as_posix() so output is identical on Linux and Windows; existing
+    # callers compare these against forward-slash literals.
     for cov_path in packs_path.glob("*/Integrations/*/.coverage"):
-        yield str(cov_path)
+        yield cov_path.as_posix()
     for cov_path in packs_path.glob("*/Scripts/*/.coverage"):
-        yield str(cov_path)
+        yield cov_path.as_posix()
 
 
 def get_report_str(coverage_obj) -> str:

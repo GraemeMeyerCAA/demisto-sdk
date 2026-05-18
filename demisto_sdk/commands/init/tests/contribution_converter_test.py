@@ -228,8 +228,9 @@ def rename_file_in_zip(
     modded_zip_file = os.path.join(
         os.path.dirname(path_to_zip), "Edit" + Path(path_to_zip).name
     )
-    tmp_zf = ZipFile(modded_zip_file, "w")
-    with ZipFile(path_to_zip, "r") as zf:
+    # Close the new zip before os.replace - Windows can't move/replace a file
+    # while it still has an open handle.
+    with ZipFile(modded_zip_file, "w") as tmp_zf, ZipFile(path_to_zip, "r") as zf:
         for item in zf.infolist():
             if item.filename == original_file_name:
                 with tmp_zf.open(updated_file_name, "w") as out_file:

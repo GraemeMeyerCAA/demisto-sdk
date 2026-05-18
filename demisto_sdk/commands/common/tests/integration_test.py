@@ -1589,7 +1589,7 @@ class TestIntegrationValidator:
         )
 
         python_path = integration.code.path
-        new_name = f'{python_path.rsplit("/", 1)[0]}/{file_name}'
+        new_name = os.path.join(os.path.dirname(python_path), file_name)
         os.rename(python_path, new_name)
         with ChangeCWD(repo.path):
             validator = IntegrationValidator(structure_validator)

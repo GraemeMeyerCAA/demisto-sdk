@@ -126,8 +126,10 @@ class DocReviewer:
         file_path_obj = Path(file_path)
         if "Packs" in file_path_obj.parts:
             pack_name = file_path_obj.parts[file_path_obj.parts.index("Packs") + 1]
-            packs_ignore_path = os.path.join(
-                "Packs", pack_name, PACKS_PACK_IGNORE_FILE_NAME
+            # Return a posix-style path so tests and downstream consumers see
+            # the same value on Linux and Windows.
+            packs_ignore_path = "/".join(
+                ("Packs", pack_name, PACKS_PACK_IGNORE_FILE_NAME)
             )
             default_pack_known_words = add_default_pack_known_words(file_path)
             if Path(packs_ignore_path).is_file():

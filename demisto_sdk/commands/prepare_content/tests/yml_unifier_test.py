@@ -148,8 +148,11 @@ def test_get_code_file_case_insensative(tmp_path):
     open(
         integration_dir / "ADummy.tests.ps1", "a"
     )  # a test file which is named such a way that it comes up first
-    assert IntegrationScriptUnifier.get_code_file(integration_dir, ".ps1") == str(
-        integration_dir / "Dummy.ps1"
+    # get_code_file() normalises its return to forward-slashes for platform
+    # stability; compare via Path.as_posix() so this test works on both OSes.
+    assert (
+        IntegrationScriptUnifier.get_code_file(integration_dir, ".ps1")
+        == (integration_dir / "Dummy.ps1").as_posix()
     )
 
 
@@ -169,10 +172,12 @@ def test_get_script_or_integration_package_data():
         Path(f"{git_path()}/demisto_sdk/tests/test_files/Packs/CalculateGeoDistance")
     )
     assert (
-        yml_path
+        Path(yml_path).as_posix()
         == f"{git_path()}/demisto_sdk/tests/test_files/Packs/CalculateGeoDistance/CalculateGeoDistance.yml"
     )
-    assert code_data == code
+    # Normalise CRLF -> LF; on Windows git can convert .py files with autocrlf
+    # so one side has \r\n while the other (read via different mode) has \n.
+    assert code_data.replace("\r\n", "\n") == code.replace("\r\n", "\n")
 
 
 def test_get_data():
@@ -186,7 +191,7 @@ def test_get_data():
     )
     assert data == image
     assert (
-        found_data_path
+        Path(found_data_path).as_posix()
         == f"{git_path()}/demisto_sdk/tests/test_files/Packs/VulnDB/VulnDB_image.png"
     )
     data, found_data_path = IntegrationScriptUnifier.get_data(
@@ -212,7 +217,7 @@ def test_insert_description_to_yml():
     )
 
     assert (
-        found_data_path
+        Path(found_data_path).as_posix()
         == f"{git_path()}/demisto_sdk/tests/test_files/Packs/VulnDB/VulnDB_description.md"
     )
     assert (desc_data + integration_doc_link) == yml_unified["detaileddescription"]

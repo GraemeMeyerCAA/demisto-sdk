@@ -1,5 +1,6 @@
 import glob
 import os
+import socket
 
 import pytest
 import requests_mock
@@ -8,6 +9,20 @@ import demisto_sdk
 from demisto_sdk.commands.common.hook_validations.readme import ReadMeValidator
 from demisto_sdk.commands.common.legacy_git_tools import git_path
 from TestSuite.test_tools import ChangeCWD
+
+
+def _mdx_server_reachable() -> bool:
+    try:
+        with socket.create_connection(("127.0.0.1", 6161), timeout=0.5):
+            return True
+    except OSError:
+        return False
+
+
+requires_mdx_server = pytest.mark.skipif(
+    not _mdx_server_reachable(),
+    reason="requires MDX server (Docker or local Node) on 127.0.0.1:6161",
+)
 
 VALID_MD = f"{git_path()}/demisto_sdk/tests/test_files/README-valid.md"
 INVALID_MD = f"{git_path()}/demisto_sdk/tests/test_files/README-invalid.md"
@@ -421,6 +436,7 @@ def test_readme_verify_no_default_ignore_test(
     assert readme_validator.verify_no_default_sections_left() == expected_result
 
 
+@requires_mdx_server
 @pytest.mark.parametrize("errors_found, errors_ignore, expected", ERROR_FOUND_CASES)
 def test_context_only_runs_once_when_error_exist(
     mocker, integration, errors_found, errors_ignore, expected

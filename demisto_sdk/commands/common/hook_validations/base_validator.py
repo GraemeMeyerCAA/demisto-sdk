@@ -243,8 +243,13 @@ class BaseValidator:
             return None
 
         formatted_error = formatted_error_str()
+        # loguru parses `<...>` in the format string as colour tags; user
+        # content (paths, pack-name placeholders like `<PACK_NAME>` in error
+        # templates) can collide with that and raise ValueError. Pass the
+        # content via `.opt(colors=True)` *args so loguru only tag-parses the
+        # literal markup, not the interpolated payload.
         if suggested_fix and not is_error_not_allowed_in_pack_ignore:
-            logger.error(f"<red>{formatted_error[:-1]}</red>")
+            logger.opt(colors=True).error("<red>{}</red>", formatted_error[:-1])
             if error_code == "ST109":
                 logger.info("<red>Please add to the root of the yml.</red>\n")
             elif error_code == "ST107":

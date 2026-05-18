@@ -1,11 +1,26 @@
 import inspect
 import os
 import shutil
+import socket
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 import pytest
 from pytest_mock import MockerFixture
+
+
+def _mdx_server_reachable() -> bool:
+    try:
+        with socket.create_connection(("127.0.0.1", 6161), timeout=0.5):
+            return True
+    except OSError:
+        return False
+
+
+requires_mdx_server = pytest.mark.skipif(
+    not _mdx_server_reachable(),
+    reason="requires MDX server (Docker or local Node) on 127.0.0.1:6161",
+)
 
 from demisto_sdk.commands.common import tools
 from demisto_sdk.commands.common.constants import (
@@ -912,6 +927,7 @@ def handle_example(example, insecure):
     return name, human_readable, context, []
 
 
+@requires_mdx_server
 def test_generate_playbook_doc_passes_markdownlint(tmp_path):
     """
     Given: A playbook
@@ -1063,6 +1079,7 @@ class TestGenerateIntegrationDoc:
         # TODO add
         pass
 
+    @requires_mdx_server
     def test_generate_integration_doc_passes_markdownlint(self, tmp_path: Path):
         """
         Given: An integrations

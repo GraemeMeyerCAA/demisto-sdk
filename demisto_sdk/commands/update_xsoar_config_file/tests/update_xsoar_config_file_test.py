@@ -85,7 +85,9 @@ class TestXSOARConfigFileUpdater:
                 try:
                     with open(file_path, "r") as config_file:
                         config_file_info = json.load(config_file)
-                except IsADirectoryError:
+                except (IsADirectoryError, PermissionError):
+                # Windows raises PermissionError when open() is called on a
+                # directory; POSIX raises IsADirectoryError.
                     config_file_info = {}
                 assert config_file_info == expected_outputs
             else:
@@ -181,7 +183,9 @@ class TestXSOARConfigFileUpdater:
             try:
                 with open(config_file_path, "r") as config_file:
                     config_file_info = json.load(config_file)
-            except IsADirectoryError:
+            except (IsADirectoryError, PermissionError):
+                # Windows raises PermissionError when open() is called on a
+                # directory; POSIX raises IsADirectoryError.
                 config_file_info = {}
             assert config_file_info == {
                 "marketplace_packs": [{"id": "Pack1", "version": "1.0.1"}]
@@ -219,7 +223,9 @@ class TestXSOARConfigFileUpdater:
             try:
                 with open(config_file_path) as config_file:
                     config_file_info = json.load(config_file)
-            except IsADirectoryError:
+            except (IsADirectoryError, PermissionError):
+                # Windows raises PermissionError when open() is called on a
+                # directory; POSIX raises IsADirectoryError.
                 config_file_info = {}
             assert config_file_info == {
                 "custom_packs": [{"id": "Pack1", "url": "Packs/Pack1"}]
@@ -272,7 +278,9 @@ class TestXSOARConfigFileUpdater:
             try:
                 with open(f"{tmp_output_dir}/{expected_path}") as config_file:
                     config_file_info = json.load(config_file)
-            except IsADirectoryError:
+            except (IsADirectoryError, PermissionError):
+                # Windows raises PermissionError when open() is called on a
+                # directory; POSIX raises IsADirectoryError.
                 config_file_info = {}
             assert config_file_info == expected_outputs
 
@@ -322,7 +330,9 @@ class TestXSOARConfigFileUpdater:
             try:
                 with open(f"{tmp_output_dir}/{expected_path}") as config_file:
                     config_file_info = json.load(config_file)
-            except IsADirectoryError:
+            except (IsADirectoryError, PermissionError):
+                # Windows raises PermissionError when open() is called on a
+                # directory; POSIX raises IsADirectoryError.
                 config_file_info = {}
             assert config_file_info == expected_outputs
 

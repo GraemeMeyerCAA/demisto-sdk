@@ -117,16 +117,21 @@ def test_collect_images_from_markdown_and_replace_with_storage_path_different_ma
 ):
     import tempfile
 
-    with tempfile.NamedTemporaryFile(mode="w") as f:
+    # `delete=False` + manual unlink: Windows can't reopen a NamedTemporaryFile
+    # while it's still held by the original handle.
+    f = tempfile.NamedTemporaryFile(mode="w", delete=False)
+    try:
         f.write(
             "![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_raw_input.png)"
         )
-        f.flush()
+        f.close()
         markdown_images_handler.collect_images_from_markdown_and_replace_with_storage_path(
             Path(f.name), "test_pack", marketplace, ImagesFolderNames.README_IMAGES
         )
         res = Path(f.name).read_text()
         assert (SERVER_API_TO_STORAGE in res) == expected_res
+    finally:
+        Path(f.name).unlink(missing_ok=True)
 
 
 @pytest.fixture

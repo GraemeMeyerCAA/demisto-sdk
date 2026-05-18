@@ -189,11 +189,11 @@ class GitUtil:
         self, path: Union[Path, str], commit_or_branch: str, from_remote: bool = True
     ) -> bytes:
         commit = self.get_commit(commit_or_branch, from_remote=from_remote)
-        path = (
-            str(self.path_from_git_root(path))
-            if Path(path).is_absolute()
-            else str(path)
-        )
+        # git tree lookups use forward-slash paths regardless of host OS.
+        if Path(path).is_absolute():
+            path = self.path_from_git_root(path).as_posix()
+        else:
+            path = Path(path).as_posix()
 
         try:
             blob: Blob = commit.tree / path
@@ -212,7 +212,10 @@ class GitUtil:
             logger.debug(f"Could not get commit {commit_or_branch}")
             return False
 
-        path = str(self.path_from_git_root(path))
+        # git internally uses forward-slash paths regardless of host OS; on
+        # Windows path_from_git_root() returns `\` separators, so normalise
+        # before querying the tree.
+        path = self.path_from_git_root(path).as_posix()
 
         try:
             return commit.tree[path].path == path

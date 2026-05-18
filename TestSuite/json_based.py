@@ -42,16 +42,19 @@ class JSONBased(TestSuiteBase):
         self._file_path.write_text(content, None)
 
     def get_path_from_pack(self):
-        dir_parts = str(self._file_path).split("/")
-        dir_from_packs = PACKS_DIR
+        # Use Path.parts (OS-aware) so Windows backslash paths work too.
+        # Return forward-slash form so downstream string compares (e.g. against
+        # literal "Packs/PackName/..." values in tests) match on every platform.
+        dir_parts = self._file_path.parts
+        result_parts = [PACKS_DIR]
         add_directory = False
         for directory in dir_parts:
             if add_directory:
-                dir_from_packs = os.path.join(dir_from_packs, directory)
+                result_parts.append(directory)
             elif directory == PACKS_DIR:
                 add_directory = True
 
-        return dir_from_packs
+        return "/".join(result_parts)
 
     def read_json_as_text(self) -> str:
         return self._file_path.read_text()

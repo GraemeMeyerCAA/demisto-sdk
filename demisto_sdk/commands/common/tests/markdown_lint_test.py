@@ -1,7 +1,27 @@
+import socket
+
 import pytest
 
 from demisto_sdk.commands.common.hook_validations.readme import ReadMeValidator
 from demisto_sdk.commands.common.markdown_lint import run_markdownlint
+
+
+def _mdx_server_reachable() -> bool:
+    try:
+        with socket.create_connection(("127.0.0.1", 6161), timeout=0.5):
+            return True
+    except OSError:
+        return False
+
+
+# `ReadMeValidator.start_mdx_server()` tries Docker first, then a local Node
+# server with markdown-lint installed; if neither is available it silently
+# returns an empty context manager that yields False, and these tests then
+# fail trying to hit 127.0.0.1:6161. Skip honestly when the server isn't up.
+requires_mdx_server = pytest.mark.skipif(
+    not _mdx_server_reachable(),
+    reason="requires MDX server (Docker or local Node) on 127.0.0.1:6161",
+)
 
 
 @pytest.mark.parametrize(
@@ -24,6 +44,7 @@ from demisto_sdk.commands.common.markdown_lint import run_markdownlint
         ("<p>something</p>", "no-inline-html"),
     ],
 )
+@requires_mdx_server
 def test_markdown_validations(file_content, expected_error):
     """
     Given: Markdown text with an issue
@@ -59,6 +80,7 @@ def test_markdown_validations(file_content, expected_error):
         ),
     ],
 )
+@requires_mdx_server
 def test_markdown_fixes(file_content, expected_fix):
     """
     Given: Markdown text with a fixable issue
@@ -72,6 +94,7 @@ def test_markdown_fixes(file_content, expected_fix):
         assert expected_fix == response.fixed_text, response.fixed_text
 
 
+@requires_mdx_server
 def test_disabled_rule():
     # Tests no h1 header and duplicate headers rule not active. Just to ensure config working properly
     with ReadMeValidator.start_mdx_server():
@@ -80,6 +103,7 @@ def test_disabled_rule():
         ).has_errors, run_markdownlint("## Hello\n\n## Hello").validations
 
 
+@requires_mdx_server
 def test_filename_returned_in_validations():
     # Tests no h1 header and duplicate headers rule not active. Just to ensure config working properly
     with ReadMeValidator.start_mdx_server():

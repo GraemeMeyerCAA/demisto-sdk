@@ -1,11 +1,22 @@
+import platform
 import stat
 from datetime import datetime
 from pathlib import Path
 
+import pytest
 from git import Blob
 
 from demisto_sdk.commands.common.constants import ISO_TIMESTAMP_FORMAT
 from TestSuite.repo import Repo
+
+# NTFS doesn't carry POSIX mode bits, so `chmod(... | S_IEXEC)` is a no-op
+# on Windows. Git on Windows usually reports 100644 for everything regardless
+# of NTFS state (unless `core.fileMode=true`), making the
+# has_file_permissions_changed() contract POSIX-only.
+WINDOWS_NO_POSIX_MODE = pytest.mark.skipif(
+    platform.system() == "Windows",
+    reason="POSIX file-mode bits (100644 vs 100755) aren't tracked on NTFS",
+)
 
 
 def test_find_primary_branch():
@@ -61,6 +72,7 @@ def test_find_primary_branch():
     assert not GitUtil.find_primary_branch(repo_with_remotes_refs_other)
 
 
+@WINDOWS_NO_POSIX_MODE
 class TestHasFilePermissionsChanged:
     file = Path("testfile")
 

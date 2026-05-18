@@ -135,7 +135,7 @@ def test_is_invalid_description_name(repo):
     description_path = glob.glob(
         os.path.join(os.path.dirname(integration.yml.path), "*_description.md")
     )
-    new_name = f'{description_path[0].rsplit("/", 1)[0]}/IntName_desc.md'
+    new_name = os.path.join(os.path.dirname(description_path[0]), "IntName_desc.md")
 
     os.rename(description_path[0], new_name)
     with ChangeCWD(repo.path):
@@ -157,8 +157,8 @@ def test_is_invalid_description_integration_name(repo):
     pack = repo.create_pack("PackName")
 
     integration = pack.create_integration("IntName")
-    new_name = (
-        f'{integration.description.path.rsplit("/", 1)[0]}/IntNameTest_description.md'
+    new_name = os.path.join(
+        os.path.dirname(integration.description.path), "IntNameTest_description.md"
     )
 
     os.rename(integration.description.path, new_name)

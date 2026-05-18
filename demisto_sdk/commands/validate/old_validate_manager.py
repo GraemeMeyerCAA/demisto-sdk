@@ -1960,8 +1960,10 @@ class OldValidateManager:
                 ) or not set(section_values) == set(value):
                     files_to_test.add(key)
 
+            # Use posix-style paths so output is identical on Linux/Windows
+            # (downstream consumers do plain string comparisons against these).
             all_files_mapper = {
-                file.name: str(file)
+                file.name: file.as_posix()
                 for file in all_files
                 if is_file_in_pack(file, pack_name)
             }

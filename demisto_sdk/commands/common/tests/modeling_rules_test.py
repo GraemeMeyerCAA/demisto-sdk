@@ -142,16 +142,16 @@ def test_is_invalid_rule_file_name(mocker, repo, file_to_rename):
     structure_validator = StructureValidator(dummy_modeling_rule.yml.path)
     if file_to_rename == "xif":
         path_to_replace = dummy_modeling_rule.rules.path
-        new_name = f'{path_to_replace.rsplit("/", 1)[0]}/MyRule1.xif'
+        new_name = os.path.join(os.path.dirname(path_to_replace), "MyRule1.xif")
     elif file_to_rename == "yml":
         path_to_replace = dummy_modeling_rule.yml.path
-        new_name = f'{path_to_replace.rsplit("/", 1)[0]}/MyRule1.yml'
+        new_name = os.path.join(os.path.dirname(path_to_replace), "MyRule1.yml")
     elif file_to_rename == "schema":
         path_to_replace = dummy_modeling_rule.schema.path
-        new_name = f'{path_to_replace.rsplit("/", 1)[0]}/MyRule1_schema.json'
+        new_name = os.path.join(os.path.dirname(path_to_replace), "MyRule1_schema.json")
     else:
         path_to_replace = dummy_modeling_rule.testdata.path
-        new_name = f'{path_to_replace.rsplit("/", 1)[0]}/MyRule1_testdata.json'
+        new_name = os.path.join(os.path.dirname(path_to_replace), "MyRule1_testdata.json")
     os.rename(path_to_replace, new_name)
 
     with ChangeCWD(repo.path):

@@ -1,6 +1,7 @@
 import os
 from unittest import mock
 
+import docker
 import pytest
 import requests
 from packaging.version import Version
@@ -8,6 +9,21 @@ from packaging.version import Version
 import demisto_sdk.commands.common.docker_helper as dhelper
 
 
+def _docker_daemon_reachable() -> bool:
+    try:
+        docker.from_env(timeout=1).ping()
+        return True
+    except Exception:
+        return False
+
+
+requires_docker = pytest.mark.skipif(
+    not _docker_daemon_reachable(),
+    reason="requires a running Docker daemon",
+)
+
+
+@requires_docker
 def test_init_global_docker_client():
     res = dhelper.init_global_docker_client(log_prompt="unit testing")
     assert res is not None

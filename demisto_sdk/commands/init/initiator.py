@@ -954,9 +954,11 @@ class Initiator:
             secrets = self.find_secrets()
             if secrets:
                 new_line = "\n"
-                logger.info(
-                    f"\n<green>The following secrets were detected:\n"
-                    f"{new_line.join(secret for secret in secrets)}</green>"
+                # Use args-form so any `<...>` in secret strings doesn't get
+                # parsed as a loguru colour tag.
+                logger.opt(colors=True).info(
+                    "\n<green>The following secrets were detected:\n{}</green>",
+                    new_line.join(secret for secret in secrets),
                 )
 
                 ignore_secrets = input(

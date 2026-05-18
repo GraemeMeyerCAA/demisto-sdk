@@ -298,9 +298,7 @@ class ReleaseNotesValidator(BaseValidator):
         modified_yml_list = [
             file for file in modified_files_list if file.endswith(".yml")
         ]
-        rn_file_name = self.release_notes_file_path[
-            self.release_notes_file_path.rindex("/") + 1 :
-        ]
+        rn_file_name = os.path.basename(self.release_notes_file_path)
         error_list = []
         for type, field in zip(["Integrations", "Scripts"], ["display", "name"]):
             if type in release_notes_categories:

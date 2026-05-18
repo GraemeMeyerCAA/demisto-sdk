@@ -161,8 +161,8 @@ class TestTextFile(FileTesting):
             assert TextFile.read_from_github_api(path) == Path(path).read_text()
             # make sure that the URL is sent correctly
             assert (
-                f"{DEMISTO_GIT_PRIMARY_BRANCH}{path}"
-                in requests_mocker.call_args.args[0]
+                f"{DEMISTO_GIT_PRIMARY_BRANCH}/{Path(path).as_posix()}"
+                in requests_mocker.call_args.args[0].replace("\\", "/")
             )
 
     def test_read_from_gitlab_api(self, mocker, input_files: Tuple[List[str], str]):

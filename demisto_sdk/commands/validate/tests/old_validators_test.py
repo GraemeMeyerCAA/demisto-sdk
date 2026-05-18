@@ -1,5 +1,6 @@
 import contextlib
 import os
+import platform
 import sys
 from configparser import ConfigParser
 from io import StringIO
@@ -2701,7 +2702,30 @@ def test_job_both_selected_and_all_feeds_in_job(repo, caplog):
 
 
 @pytest.mark.parametrize("is_feed", (True, False))
-@pytest.mark.parametrize("name", ("", " ", "  ", "\n", "\t"))
+@pytest.mark.parametrize(
+    "name",
+    (
+        "",
+        " ",
+        "  ",
+        # NTFS rejects control chars in filenames, so these only round-trip
+        # through pack.create_job() on POSIX.
+        pytest.param(
+            "\n",
+            marks=pytest.mark.skipif(
+                platform.system() == "Windows",
+                reason="NTFS rejects newline in filenames",
+            ),
+        ),
+        pytest.param(
+            "\t",
+            marks=pytest.mark.skipif(
+                platform.system() == "Windows",
+                reason="NTFS rejects tab in filenames",
+            ),
+        ),
+    ),
+)
 def test_job_blank_name(repo, mocker, name: str, is_feed: bool, caplog):
     """
     Given
