@@ -7,7 +7,9 @@ class File:
         self._tmp_path = tmp_path
         self._repo_path = repo_path
         self.path = str(self._tmp_path)
-        self.rel_path = os.path.relpath(self.path, self._repo_path)
+        # Always emit posix-style rel_path so downstream string checks
+        # (eg. path.startswith("Packs/")) work on Windows.
+        self.rel_path = os.path.relpath(self.path, self._repo_path).replace(os.sep, "/")
         self.write(txt)
 
     def write(self, txt: str):

@@ -3155,6 +3155,9 @@ def is_xsoar_supported_pack(file_path: str) -> bool:
 
 def get_relative_path_from_packs_dir(file_path: str) -> str:
     """Get the relative path for a given file_path starting in the Packs directory"""
+    # Normalise to forward-slash so downstream string checks against
+    # "Packs/..." work on every OS.
+    file_path = file_path.replace("\\", "/")
     if PACKS_DIR not in file_path or file_path.startswith(PACKS_DIR):
         return file_path
 
