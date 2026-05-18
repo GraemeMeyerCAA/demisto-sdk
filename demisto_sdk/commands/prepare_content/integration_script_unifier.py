@@ -325,21 +325,26 @@ class IntegrationScriptUnifier(Unifier):
             r"|conftest\.py|__init__\.py|ApiModule\.py|vulture_whitelist\.py"
             r"|CommonServerPowerShell\.ps1|CommonServerUserPowerShell\.ps1|demistomock\.ps1|\.Tests\.ps1"
         )
+        # Tests and existing callers rely on forward-slash output regardless of
+        # platform, so normalise every return through this helper.
+        def _norm(p: str) -> str:
+            return p.replace(os.sep, "/")
+
         if package_path.endswith("/"):
             # remove the last / as we use os.path.join
             package_path = package_path[:-1]
         if package_path.endswith(os.path.join("Scripts", "CommonServerPython")):
-            return os.path.join(package_path, "CommonServerPython.py")
+            return _norm(os.path.join(package_path, "CommonServerPython.py"))
         if package_path.endswith(os.path.join("Scripts", "CommonServerUserPython")):
-            return os.path.join(package_path, "CommonServerUserPython.py")
+            return _norm(os.path.join(package_path, "CommonServerUserPython.py"))
         if package_path.endswith(os.path.join("Scripts", "CommonServerPowerShell")):
-            return os.path.join(package_path, "CommonServerPowerShell.ps1")
+            return _norm(os.path.join(package_path, "CommonServerPowerShell.ps1"))
         if package_path.endswith(os.path.join("Scripts", "CommonServerUserPowerShell")):
-            return os.path.join(package_path, "CommonServerUserPowerShell.ps1")
+            return _norm(os.path.join(package_path, "CommonServerUserPowerShell.ps1"))
         if package_path.endswith(API_MODULE_FILE_SUFFIX):
-            return os.path.join(
+            return _norm(os.path.join(
                 package_path, Path(os.path.normpath(package_path)).name + ".py"
-            )
+            ))
 
         script_path_list = list(
             filter(
@@ -348,7 +353,7 @@ class IntegrationScriptUnifier(Unifier):
             )
         )
         if script_path_list:
-            return script_path_list[0]
+            return _norm(script_path_list[0])
         else:
             raise ValueError(
                 f"Could not find a code file {script_type} in {package_path}"

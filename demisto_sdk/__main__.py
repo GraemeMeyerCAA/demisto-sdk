@@ -60,11 +60,6 @@ def main(
         )
         typer.echo(message)
 
-    if platform.system() == "Windows":
-        typer.echo(
-            "Warning: Using Demisto-SDK on Windows is not supported. Use WSL2 or run in a container."
-        )
-
     if version:
         show_version()
         raise typer.Exit()

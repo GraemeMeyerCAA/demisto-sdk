@@ -161,7 +161,7 @@ def test_sign_pack_error_from_subprocess(
 
     content_object_pack.sign_pack(content_object_pack.path, signer_path)
 
-    assert "Failed to sign pack for Pack1 - b'error\\n'" in caplog.text
+    assert "Failed to sign pack for Pack1 - b'error" in caplog.text.replace("\\r\\n", "\\n")
 
 
 def test_sign_pack_success(repo, mocker, fake_process, monkeypatch, caplog):

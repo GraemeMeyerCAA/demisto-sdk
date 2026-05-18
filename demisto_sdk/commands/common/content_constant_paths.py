@@ -42,4 +42,9 @@ else:
         "Could not add API modules to 'PYTHONPATH' as the base directory does not exist."
     )
 
-PYTHONPATH_STR = ":".join(str(path) for path in PYTHONPATH)
+import os as _os
+
+# Host-side PYTHONPATH uses the OS-native separator (`:` on POSIX, `;` on Windows).
+# When building a PYTHONPATH that will live INSIDE a Linux container, callers must
+# join with ":" explicitly — see e.g. `pre_commit.hooks.docker.get_docker_python_path`.
+PYTHONPATH_STR = _os.pathsep.join(str(path) for path in PYTHONPATH)

@@ -619,7 +619,7 @@ def working_repo(repo):
     pack4 = repo.create_pack("pack4")
     pack4.create_layoutcontainer("example", indicator_layout)
     pack5 = repo.create_pack("pack5")
-    pack5.create_layout(pack5, generic_layout)
+    pack5.create_layout("example", generic_layout)
 
     with ChangeCWD(repo.path):
         ids = cis.IDSetCreator()

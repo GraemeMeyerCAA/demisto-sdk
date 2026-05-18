@@ -23,6 +23,50 @@ Windows machines are not supported - use WSL2 or run in a container instead.
 - **Install** - `pip3 install demisto-sdk`
 - **Upgrade** - `pip3 install --upgrade demisto-sdk`
 
+### Running on Windows
+
+`demisto-sdk` runs natively on Windows. The graph-using commands
+(`validate`, `format`, `find-dependencies`, `update-release-notes`,
+`graph ...`) need a reachable Neo4j 5.x instance:
+
+1. Install a JDK 17 (e.g. `winget install EclipseAdoptium.Temurin.17.JDK`).
+2. Download Neo4j Community Edition 5.22.0 for Windows from
+   <https://dist.neo4j.org/neo4j-community-5.22.0-windows.zip>, extract,
+   and run `bin\neo4j-admin.bat dbms set-initial-password contentgraph`.
+   Drop the matching APOC core jar into `plugins/` (the SDK uses
+   `apoc.periodic.iterate` and friends):
+   <https://github.com/neo4j/apoc/releases/download/5.22.0/apoc-5.22.0-core.jar>.
+   Append the APOC allowlist to `conf/neo4j.conf`:
+   ```
+   dbms.security.procedures.unrestricted=apoc.*
+   dbms.security.procedures.allowlist=apoc.*
+   ```
+   Create `conf/apoc.conf` with file-IO enabled (graph-validators export
+   intermediate state to disk):
+   ```
+   apoc.export.file.enabled=true
+   apoc.import.file.enabled=true
+   apoc.import.file.use_neo4j_config=true
+   ```
+   Then start the server with `bin\neo4j.bat console`.
+3. The SDK auto-detects the local Neo4j by probing TCP `127.0.0.1:7687`,
+   so no env vars are required. If you prefer to be explicit (or run Neo4j
+   on a non-default host/port) set:
+   ```
+   DEMISTO_SDK_NEO4J_LOCAL=1
+   DEMISTO_SDK_NEO4J_DATABASE_URL=neo4j://127.0.0.1:7687
+   DEMISTO_SDK_NEO4J_DATABASE_HTTP=http://127.0.0.1:7474
+   DEMISTO_SDK_NEO4J_PASSWORD=contentgraph
+   ```
+
+Notes:
+- Docker-coupled commands (`lint`, `pre-commit --mode docker`,
+  `test-content`, `test-modeling-rule`) still require Docker Desktop and a
+  Linux-style mount layout. Run them under WSL2 if Docker on Windows isn't
+  an option.
+- When running the test suite on Windows, set `PYTHONUTF8=1` so naked
+  `open()` calls default to UTF-8 instead of cp1252.
+
 ### Environment Variable Setup
 **Connect demisto-sdk with Cortex XSOAR server** - Some SDK commands require you to have an interaction with the Cortex XSOAR or Cortex XSIAM server. Examples of such interactions
 include uploading and downloading entities to or from XSOAR or XSIAM and running commands in the CLI.

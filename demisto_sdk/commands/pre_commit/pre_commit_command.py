@@ -346,9 +346,9 @@ class PreCommitRunner:
         ret_val = 0
         pre_commit_context.dry_run = dry_run
         precommit_env = os.environ.copy()
-        precommit_env["PYTHONPATH"] = ":".join(str(path) for path in PYTHONPATH)
+        precommit_env["PYTHONPATH"] = os.pathsep.join(str(path) for path in PYTHONPATH)
         # The PYTHONPATH should be the same as the PYTHONPATH, but without the site-packages because MYPY does not support it
-        precommit_env["MYPYPATH"] = ":".join(
+        precommit_env["MYPYPATH"] = os.pathsep.join(
             str(path) for path in sorted(PYTHONPATH) if "site-packages" not in str(path)
         )
         precommit_env["DEMISTO_SDK_CONTENT_PATH"] = str(CONTENT_PATH)

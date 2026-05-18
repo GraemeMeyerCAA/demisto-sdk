@@ -47,7 +47,8 @@ class TestValidYAML:
         expected_file = TEST_VALID_YAML.parent / f"prefix-{TEST_VALID_YAML.name}"
         obj = YAMLObject(TEST_VALID_YAML, "prefix")
         assert obj.dump()[0] == expected_file
-        assert obj.to_dict() == yaml.load(expected_file.open())
+        with expected_file.open() as fh:
+            assert obj.to_dict() == yaml.load(fh)
         expected_file.unlink()
 
 

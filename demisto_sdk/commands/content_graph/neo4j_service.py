@@ -1,6 +1,7 @@
 import hashlib
 import os
 import shutil
+import socket
 from pathlib import Path
 
 import docker
@@ -126,7 +127,11 @@ def _docker_start():
             "timeout": 15 * 1000000000,
             "retries": 10,
         },
-        user=f"{os.getuid()}:{os.getgid()}",
+        **(
+            {"user": f"{os.getuid()}:{os.getgid()}"}
+            if hasattr(os, "getuid")
+            else {}
+        ),
     )
     logger.debug("Neo4j service started successfully")
 
@@ -179,6 +184,21 @@ def is_alive():
 
 
 def is_running_on_docker():
+    """Decide whether the SDK should manage Neo4j via Docker.
+
+    Returns False (i.e. "use a Neo4j the user already runs") when:
+      - DEMISTO_SDK_NEO4J_LOCAL is set (explicit opt-in), OR
+      - bolt port 7687 is already accepting connections on localhost, OR
+      - the POSIX server install dir /var/lib/neo4j exists (legacy heuristic).
+    Otherwise the SDK falls back to starting Neo4j in a Docker container.
+    """
+    if os.getenv("DEMISTO_SDK_NEO4J_LOCAL"):
+        return False
+    try:
+        with socket.create_connection(("127.0.0.1", 7687), timeout=0.5):
+            return False
+    except OSError:
+        pass
     return not LOCAL_NEO4J_PATH.exists()
 
 

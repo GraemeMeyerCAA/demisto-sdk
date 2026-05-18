@@ -3056,9 +3056,15 @@ def test_sha1_file(file_name, expected_hash):
     assert tools.sha1_file(path_str) == expected_hash
     assert tools.sha1_file(Path(path_str)) == expected_hash
     # move file to a different location and check that the hash is still the same
-    with NamedTemporaryFile() as temp_dir:
-        shutil.copy(path_str, temp_dir.name)
-        assert tools.sha1_file(temp_dir.name) == expected_hash
+    # `delete=False` so the file isn't open-locked on Windows when shutil.copy
+    # tries to overwrite it; we unlink manually afterwards.
+    temp = NamedTemporaryFile(delete=False)
+    try:
+        temp.close()
+        shutil.copy(path_str, temp.name)
+        assert tools.sha1_file(temp.name) == expected_hash
+    finally:
+        Path(temp.name).unlink(missing_ok=True)
 
 
 def test_sha1_dir():

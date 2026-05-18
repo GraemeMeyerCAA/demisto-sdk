@@ -8,17 +8,15 @@ from pathlib import Path
 from typing import Generator
 from unittest import mock
 
-# Python 3.14 switched the default POSIX multiprocessing start method to
-# "forkserver", which breaks test fixtures that mutate module globals in
-# the parent and expect children to inherit them. Pin to "fork" for tests.
-if (
-    sys.version_info >= (3, 14)
-    and multiprocessing.get_start_method(allow_none=True) is None
-):
+# Pin multiprocessing to "spawn" on every platform and Python version so the
+# test suite behaves identically on Linux, macOS and Windows (Windows has no
+# `fork`; Python 3.14 changed the POSIX default to `forkserver`). Forcing
+# `spawn` is the strictest of the three start methods, so any fixture that
+# works under spawn works under the others.
+if multiprocessing.get_start_method(allow_none=True) is None:
     try:
-        multiprocessing.set_start_method("fork")
+        multiprocessing.set_start_method("spawn")
     except (ValueError, RuntimeError):
-        # "fork" is unavailable on Windows; fall back to the platform default.
         pass
 
 import pytest

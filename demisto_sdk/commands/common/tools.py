@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import contextlib
-import fcntl
+try:
+    import fcntl  # POSIX-only
+except ImportError:  # pragma: no cover - Windows
+    fcntl = None  # type: ignore[assignment]
 import glob
 import os
 import re
@@ -969,7 +972,7 @@ def get_file(
             return json.loads(result) if isinstance(result, str) else result
     except Exception as e:
         # Substitute in the file path. This is to ensure the logger doesn't fail on this tag.
-        new_err_text = re.sub(r"<file>", str(file_path), str(e))
+        new_err_text = str(e).replace("<file>", str(file_path))
         logger.error(
             f"{file_path} has a structure issue of file type {type_of_file}\n{new_err_text}"
         )
@@ -4698,23 +4701,34 @@ def run_sync(
         # Open (or create) the lock file
         lock_file = open(lock_file_path, "w")
 
-        # Wait until the lock is acquired
+        if fcntl is not None:
+            acquire = lambda: fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)  # noqa: E731
+            release = lambda: fcntl.flock(lock_file, fcntl.LOCK_UN)  # noqa: E731
+        else:
+            import msvcrt  # Windows
+
+            def acquire():
+                msvcrt.locking(lock_file.fileno(), msvcrt.LK_NBLCK, 1)
+
+            def release():
+                msvcrt.locking(lock_file.fileno(), msvcrt.LK_UNLCK, 1)
+
         while True:
             try:
-                # Try to acquire an exclusive lock
-                fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                acquire()
                 break
-            except BlockingIOError:
+            except (BlockingIOError, OSError):
                 logger.debug("Resource is busy, waiting...")
-                time.sleep(0.1)  # Wait for 0.1 seconds before retrying
+                time.sleep(0.1)
 
-        # If lock is acquired, call the exclusive function
         exclusive_function(**exclusive_function_kwargs)
 
     finally:
         if lock_file:
-            # Release the lock and close the file
-            fcntl.flock(lock_file, fcntl.LOCK_UN)
+            try:
+                release()
+            except Exception:
+                pass
             lock_file.close()
 
 

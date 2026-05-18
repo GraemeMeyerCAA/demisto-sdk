@@ -137,7 +137,7 @@ def build_xsoar_linter_env_var(integration_script: IntegrationScript) -> dict:
         xsoar_linter_env["commands"] = ",".join(
             [command.name for command in integration_script.commands]
         )
-    xsoar_linter_env["PYTHONPATH"] = ":".join(str(path) for path in PYTHONPATH)
+    xsoar_linter_env["PYTHONPATH"] = os.pathsep.join(str(path) for path in PYTHONPATH)
 
     return xsoar_linter_env
 
