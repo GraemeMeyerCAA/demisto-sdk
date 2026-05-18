@@ -1206,7 +1206,7 @@ def test_zip_multiple_packs(tmp_path: Path, integration, mocker, monkeypatch):
     for pack_path in folder_path.iterdir():
         with zipfile.ZipFile(pack_path, "r") as zip_file:
             zip_file.extractall(pack_path.parent / pack_path.stem)
-    assert {str(path.relative_to(folder_path)) for path in folder_path.rglob("*")} == {
+    assert {path.relative_to(folder_path).as_posix() for path in folder_path.rglob("*")} == {
         "Pack0",
         "Pack0/Integrations",
         "Pack0/Integrations/integration-integration_0.yml",
