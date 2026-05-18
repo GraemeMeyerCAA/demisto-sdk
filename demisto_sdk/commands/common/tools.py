@@ -1488,6 +1488,9 @@ def get_pack_names_from_files(file_paths, skip_file_types=None):
         if isinstance(path, tuple):
             path = path[1]
 
+        # Normalise Windows-style separators so the "Packs/" prefix check
+        # succeeds regardless of what the caller passed in.
+        path = path.replace("\\", "/") if isinstance(path, str) else path
         if not path.startswith("Packs/"):
             continue
 

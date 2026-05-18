@@ -831,7 +831,9 @@ class Initializer:
         """
         statuses_dict: Dict[Path, Union[GitStatuses, None]] = {}
         for path, git_status in file_by_status_dict.items():
-            path_str = str(path)
+            # Normalise separators so the literal "/Integrations/" substring
+            # checks below work on Windows too.
+            path_str = path.as_posix() if isinstance(path, Path) else str(path).replace("\\", "/")
             if self.is_unrelated_path(path_str):
                 # If the path is not related to a content item, continue.
                 continue
