@@ -94,11 +94,12 @@ class RepositoryParser:
         Yields:
             Iterator[Path]: A pack path.
         """
-        # Resolve to an absolute path so that paths shipped to multiprocessing
-        # workers via Pool.imap_unordered remain valid regardless of the
-        # worker's current working directory (relevant on Windows where the
-        # `spawn` start method does not always carry the parent's CWD).
-        packs_folder: Path = (self.path / PACKS_FOLDER).resolve()
+        # NB: keep `packs_folder` relative if `self.path` is relative — the
+        # parsed PackParser.path is stored verbatim in the graph and lookups
+        # later rebuild the same form via `path.relative_to(repo_path)`. The
+        # CWD edge case under multiprocessing.spawn is handled by the small-
+        # repo inline path in `parse()` (which runs under the caller's CWD).
+        packs_folder: Path = self.path / PACKS_FOLDER
         if packs_to_parse:
             for pack in packs_to_parse:
                 path = packs_folder / pack
