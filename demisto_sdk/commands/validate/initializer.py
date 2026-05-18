@@ -977,7 +977,9 @@ class Initializer:
         """
         paths_set: Set[Path] = set()
         for path in file_paths:
-            path_str = str(path)
+            # Normalise to posix separators so the literal "/Integrations/"
+            # substring checks below work on Windows too.
+            path_str = path.as_posix() if isinstance(path, Path) else str(path).replace("\\", "/")
             if self.is_unrelated_path(path_str):
                 continue
             if f"/{INTEGRATIONS_DIR}/" in path_str or f"/{SCRIPTS_DIR}/" in path_str:
