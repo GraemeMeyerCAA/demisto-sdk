@@ -84,12 +84,13 @@ class TestPackUniqueFilesValidator:
 
     def test_is_error_added_name_only(self):
         self.validator._add_error(("boop", "101"), "file_name")
+        expected_path = os.path.join(self.validator.pack_path, "file_name")
         assert (
-            f"{self.validator.pack_path}/file_name: [101] - boop\n"
+            f"{expected_path}: [101] - boop\n"
             in self.validator.get_errors(True)
         )
         assert (
-            f"{self.validator.pack_path}/file_name: [101] - boop\n"
+            f"{expected_path}: [101] - boop\n"
             in self.validator.get_errors()
         )
         self.validator._errors = []

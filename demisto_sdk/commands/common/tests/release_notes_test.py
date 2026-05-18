@@ -56,7 +56,13 @@ def get_validator(
 
 FILES_PATH = os.path.normpath(
     os.path.join(__file__, f"{git_path()}/demisto_sdk/tests", "test_files", "Packs")
-)
+).replace("\\", "/")
+
+
+def _join(*parts: str) -> str:
+    # find_type / get_pack_name path classification regex assumes forward
+    # slashes; make sure the test fixture paths are consistent on Windows.
+    return "/".join(parts).replace("\\", "/")
 nothing_in_rn = ""
 rn_not_filled_out = "%%UPDATE_RN%%"
 rn_filled_out = "This are sample release notes"
@@ -106,7 +112,7 @@ def test_init():
     Then
     - Ensure init returns valid file path and release notes contents.
     """
-    filepath = os.path.join(FILES_PATH, "CortexXDR", "ReleaseNotes", "1_1_1.md")
+    filepath = _join(FILES_PATH, "CortexXDR", "ReleaseNotes", "1_1_1.md")
     release_notes_validator = ReleaseNotesValidator(filepath, pack_name="test")
     release_notes_validator.release_notes_file_path = (
         "demisto_sdk/tests/test_files/Packs/CortexXDR/ReleaseNotes/" "1_1_1.md"
@@ -178,40 +184,40 @@ TEST_RELEASE_NOTES_TEST_BANK_1 = [
     (FILLED_OUT_RN, True),
 ]
 MODIFIED_FILES = [
-    os.path.join(
+    _join(
         FILES_PATH,
         "CortexXDR",
         "Integrations/PaloAltoNetworks_XDR/PaloAltoNetworks_XDR.yml",
     ),
-    os.path.join(
+    _join(
         FILES_PATH,
         "CortexXDR",
         "Integrations/PaloAltoNetworks_XDR/PaloAltoNetworks_XDR_image.png",
     ),
-    os.path.join(FILES_PATH, "CortexXDR", "IncidentTypes/Cortex_XDR_Incident.json"),
-    os.path.join(FILES_PATH, "CortexXDR", "IncidentFields/XDR_Alerts.json"),
-    os.path.join(
+    _join(FILES_PATH, "CortexXDR", "IncidentTypes/Cortex_XDR_Incident.json"),
+    _join(FILES_PATH, "CortexXDR", "IncidentFields/XDR_Alerts.json"),
+    _join(
         FILES_PATH,
         "CortexXDR",
         "Scripts/EntryWidgetNumberHostsXDR/EntryWidgetNumberHostsXDR.yml",
     ),
-    os.path.join(FILES_PATH, "CortexXDR", "README.md"),
-    os.path.join(FILES_PATH, "CortexXDR", "Playbooks/Cortex_XDR_Incident_Handling.yml"),
-    os.path.join(FILES_PATH, "CortexXDR", "Layouts/details-Cortex_XDR_Incident.json"),
-    os.path.join(FILES_PATH, "CortexXDR", "Classifiers/classifier-to-test.json"),
+    _join(FILES_PATH, "CortexXDR", "README.md"),
+    _join(FILES_PATH, "CortexXDR", "Playbooks/Cortex_XDR_Incident_Handling.yml"),
+    _join(FILES_PATH, "CortexXDR", "Layouts/details-Cortex_XDR_Incident.json"),
+    _join(FILES_PATH, "CortexXDR", "Classifiers/classifier-to-test.json"),
     os.path.join(
         FILES_PATH, "CortexXDR", "Dashboards/dashboard-sample_packs_new2.json"
     ),
 ]
 ADDED_FILES = [
-    os.path.join(FILES_PATH, "CortexXDR", "Playbooks/Cortex_XDR_Incident_Handling.yml"),
-    os.path.join(
+    _join(FILES_PATH, "CortexXDR", "Playbooks/Cortex_XDR_Incident_Handling.yml"),
+    _join(
         FILES_PATH,
         "CortexXDR",
         "Integrations/PaloAltoNetworks_XDR/PaloAltoNetworks_XDR_description.md",
     ),
-    os.path.join(FILES_PATH, "CortexXDR", "ReleaseNotes/1_0_0.md"),
-    os.path.join(FILES_PATH, "CortexXDR", "README.md"),
+    _join(FILES_PATH, "CortexXDR", "ReleaseNotes/1_0_0.md"),
+    _join(FILES_PATH, "CortexXDR", "README.md"),
 ]
 
 
@@ -246,23 +252,23 @@ def test_are_release_notes_complete(release_notes, complete_expected_result, moc
 
 
 MODIFIED_FILES_INVALID = [
-    os.path.join(
+    _join(
         FILES_PATH,
         "CortexXDR",
         "Integrations/PaloAltoNetworks_XDR/PaloAltoNetworks_XDR.yml",
     ),
-    os.path.join(FILES_PATH, "CortexXDR", "IncidentTypes/Cortex_XDR_Incident.json"),
-    os.path.join(FILES_PATH, "CortexXDR", "IncidentFields/XDR_Alerts.json"),
-    os.path.join(
+    _join(FILES_PATH, "CortexXDR", "IncidentTypes/Cortex_XDR_Incident.json"),
+    _join(FILES_PATH, "CortexXDR", "IncidentFields/XDR_Alerts.json"),
+    _join(
         FILES_PATH,
         "CortexXDR",
         "Scripts/EntryWidgetNumberHostsXDR/EntryWidgetNumberHostsXDR.yml",
     ),
-    os.path.join(FILES_PATH, "CortexXDR", "TestPlaybooks/Cortex_XDR.yml"),
-    os.path.join(FILES_PATH, "CortexXDR", ".secrets-ignore"),
-    os.path.join(FILES_PATH, "CortexXDR", "Playbooks/Cortex_XDR_Incident_Handling.yml"),
-    os.path.join(FILES_PATH, "CortexXDR", "Layouts/details-Cortex_XDR_Incident.json"),
-    os.path.join(FILES_PATH, "CortexXDR", "Classifiers/classifier-to-test.json"),
+    _join(FILES_PATH, "CortexXDR", "TestPlaybooks/Cortex_XDR.yml"),
+    _join(FILES_PATH, "CortexXDR", ".secrets-ignore"),
+    _join(FILES_PATH, "CortexXDR", "Playbooks/Cortex_XDR_Incident_Handling.yml"),
+    _join(FILES_PATH, "CortexXDR", "Layouts/details-Cortex_XDR_Incident.json"),
+    _join(FILES_PATH, "CortexXDR", "Classifiers/classifier-to-test.json"),
     os.path.join(
         FILES_PATH, "CortexXDR", "Dashboards/dashboard-sample_packs_new2.json"
     ),

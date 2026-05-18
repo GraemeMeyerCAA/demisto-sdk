@@ -204,17 +204,17 @@ def write_measure_to_logger(
 
     """
     sentence = f"Time measurements stat for {name}"
-    output_msg = (
-        f"\n<cyan>{'#' * len(sentence)}\n"
-        f"{sentence}\n"
-        f"{'#' * len(sentence)}</cyan>\n"
-    )
+    bar = "#" * len(sentence)
     stat_info_table = tabulate(csv_data, headers=MEASURE_TYPE_TO_HEADERS[measure_type])
-    output_msg += stat_info_table
+    # Use opt(colors=True) so only the literal <cyan> markup in the format
+    # string is tag-parsed; the interpolated table can safely contain
+    # angle-bracket text such as `<locals>` from Python qualnames without
+    # tripping the loguru parser.
+    fmt = "\n<cyan>{}\n{}\n{}</cyan>\n{}"
     if debug:
-        logger.debug(output_msg)
+        logger.opt(colors=True).debug(fmt, bar, sentence, bar, stat_info_table)
     else:
-        logger.info(output_msg)
+        logger.opt(colors=True).info(fmt, bar, sentence, bar, stat_info_table)
 
 
 def write_measure_to_file(

@@ -1111,7 +1111,11 @@ class GitUtil:
         Returns:
             The git file path. For example get origin/master:README.md
         """
-        git_file_path = f"{tag}:{self.path_from_git_root(full_file_path)}"
+        # Git internally uses forward-slash paths; explicitly emit as_posix()
+        # so callers on Windows don't accidentally compose `tag:Packs\foo`.
+        git_file_path = (
+            f"{tag}:{self.path_from_git_root(full_file_path).as_posix()}"
+        )
 
         if from_remote:
             try:

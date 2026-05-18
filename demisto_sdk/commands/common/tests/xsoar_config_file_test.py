@@ -18,8 +18,10 @@ def test_schema_file_correct_path():
         Validate that the __init__ method finds the schema in the expected path.
     """
     validator = XSOARConfigJsonValidator("./")
+    # Normalise separators so the substring check is OS-agnostic.
     assert (
-        "demisto_sdk/commands/common/schemas/xsoar_config.json" in validator.schema_path
+        "demisto_sdk/commands/common/schemas/xsoar_config.json"
+        in str(validator.schema_path).replace("\\", "/")
     )
 
 

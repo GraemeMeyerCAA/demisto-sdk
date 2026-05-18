@@ -319,9 +319,12 @@ class TestGenericFunctions:
     def test_get_yml_paths_in_dir(self, dir_path):
         yml_paths, first_yml_path = tools.get_yml_paths_in_dir(dir_path)
         yml_paths_test = glob.glob(os.path.join(dir_path, "*yml"))
-        assert sorted(yml_paths) == sorted(yml_paths_test)
+        # Compare via normpath so Windows mixed-separator glob results (which
+        # can return paths like "C:\foo/bar\baz.yml") align with Path output.
+        norm = lambda paths: sorted(os.path.normpath(p) for p in paths)
+        assert norm(yml_paths) == norm(yml_paths_test)
         if yml_paths_test:
-            assert first_yml_path == yml_paths_test[0]
+            assert os.path.normpath(first_yml_path) == os.path.normpath(yml_paths_test[0])
         else:
             assert not first_yml_path
 
@@ -3106,7 +3109,9 @@ def test_sha1_dir():
 )
 def test_find_pack_folder(input_path, expected_output):
     output = tools.find_pack_folder(input_path)
-    assert expected_output == str(output)
+    # Path str uses the OS-local separator; compare via as_posix() so the
+    # assertion is OS-agnostic.
+    assert expected_output == output.as_posix()
 
 
 @pytest.mark.parametrize(

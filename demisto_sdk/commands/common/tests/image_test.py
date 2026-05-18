@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 
 import pytest
@@ -80,10 +81,13 @@ def test_is_valid_image_positive(monkeypatch):
     )
     structure = mock_structure(file_path=integration_path)
     # Adding monkey patching this will make image validator behave like this is an integration outside of
-    # pack context and ignore the image that's in the same folder as the file
+    # pack context and ignore the image that's in the same folder as the file.
+    # re.escape: Windows paths contain '\U' (drive letter prefix), which the
+    # regex engine treats as an invalid escape sequence — escape the literal
+    # path before using it as a pattern.
     monkeypatch.setattr(
         "demisto_sdk.commands.common.hook_validations.image.PACKS_INTEGRATION_NON_SPLIT_YML_REGEX",
-        integration_path,
+        re.escape(integration_path),
     )
     validator = IntegrationValidator(structure)
     assert validator.is_valid_image() is True

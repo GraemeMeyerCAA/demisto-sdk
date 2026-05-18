@@ -352,7 +352,9 @@ def get_files_in_dir(
         for exclude_item in exclude_all_list:
             exclude_pattern = f"**/{exclude_item}/" + pattern
             excludes.extend([str(f) for f in glob_function(exclude_pattern)])
-        files.extend([str(f) for f in glob_function(pattern)])
+        # Always emit posix-style relative paths so callers can compare
+        # against literal "foo/bar.py" regardless of OS.
+        files.extend([f.as_posix() for f in glob_function(pattern)])
     return list(set(files) - set(excludes))
 
 

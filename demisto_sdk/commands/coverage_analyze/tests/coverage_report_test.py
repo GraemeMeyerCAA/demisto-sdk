@@ -29,9 +29,10 @@ class TestCoverageReport:
     def patern(r_type, file_name, suffix):
         # Allow Windows drive letters (e.g. "C:") and backslash separators so
         # the regex matches paths on every OS.
+        file_name_re = file_name.replace("/", r"[/\\]")
         return (
             rf"^exporting {r_type} coverage report to "
-            rf"[\w\-\./\\:]+[/\\]{file_name}\.{suffix}$"
+            rf"[\w\-\./\\:]+[/\\]{file_name_re}\.{suffix}$"
         )
 
     def test_fail_without_coverage_file(self, monkeypatch, tmpdir):
