@@ -2663,8 +2663,12 @@ def test_docker_image_is_added_for_every_integration(mocker, repo):
     - Ensure two entries for update docker image are added to release notes, one for each content object.
     - Ensure two entries for update docker images are added to release notes, one for each content object, with the
       newer docker image.
-
     """
+    # The test mutates a tracked fixture (1_19_1.md). Reset it before running
+    # so the assertion holds whether the previous run left 124 or 125 behind.
+    pathlib.Path(
+        "demisto_sdk/commands/update_release_notes/tests_data/Packs/Test/ReleaseNotes/1_19_1.md"
+    ).unlink(missing_ok=True)
     script_for_test = create_script_object()
     script_for_test.old_base_content_object = deepcopy(script_for_test)
     script_for_test.docker_image = DockerImage("demisto/python3:3.9.5.124")
