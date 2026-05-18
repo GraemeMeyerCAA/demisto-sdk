@@ -307,13 +307,24 @@ class Neo4jContentGraphInterface(ContentGraphInterface):
             )
             logger.debug("{}", f"{self._id_to_obj=}")  # noqa: PLE1205
             return
-        with Pool(processes=cpu_count()) as pool:
-            results = pool.starmap(
-                _parse_node, ((node.element_id, dict(node.items())) for node in nodes)
-            )
-            for result in results:
-                assert result.database_id is not None
-                self._id_to_obj[result.database_id] = result
+        # On Windows the multiprocessing start method is `spawn`, which imposes
+        # a heavy per-pool startup cost (each worker re-imports the SDK).
+        # When the workload is small the in-process loop is dramatically
+        # faster and avoids spawn-related deadlocks observed in the test suite.
+        SMALL_BATCH = 64
+        if len(nodes) <= SMALL_BATCH:
+            results = [
+                _parse_node(node.element_id, dict(node.items())) for node in nodes
+            ]
+        else:
+            with Pool(processes=cpu_count()) as pool:
+                results = pool.starmap(
+                    _parse_node,
+                    ((node.element_id, dict(node.items())) for node in nodes),
+                )
+        for result in results:
+            assert result.database_id is not None
+            self._id_to_obj[result.database_id] = result
 
     def _search(
         self,

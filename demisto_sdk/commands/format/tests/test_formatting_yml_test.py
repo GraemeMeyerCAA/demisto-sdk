@@ -1435,9 +1435,12 @@ class TestFormatting:
         }
         BaseUpdate.recursive_extend_schema(schema, schema)
         assert len(caplog.records) == 1
+        # The producer wraps the message in <yellow>...</yellow> color tags.
+        # Whether those tags survive the loguru -> stdlib bridge depends on
+        # platform-specific colorize defaults — compare against the substring.
         assert (
-            caplog.records[0].message
-            == "<yellow>Could not find sub-schema for input_schema</yellow>"
+            "Could not find sub-schema for input_schema"
+            in caplog.records[0].message
         )
 
     @staticmethod
@@ -1785,7 +1788,24 @@ class TestFormatting:
         assert not base_update_yml.data.get("tests")
 
     @pytest.mark.parametrize(
-        "name", ["MyIntegration", "MyIntegration ", " MyIntegration "]
+        "name",
+        [
+            "MyIntegration",
+            pytest.param(
+                "MyIntegration ",
+                marks=pytest.mark.skipif(
+                    sys.platform == "win32",
+                    reason="NTFS rejects file names with trailing space",
+                ),
+            ),
+            pytest.param(
+                " MyIntegration ",
+                marks=pytest.mark.skipif(
+                    sys.platform == "win32",
+                    reason="NTFS rejects file names with trailing space",
+                ),
+            ),
+        ],
     )
     def test_remove_spaces_end_of_id_and_name(self, pack, mocker, name):
         """

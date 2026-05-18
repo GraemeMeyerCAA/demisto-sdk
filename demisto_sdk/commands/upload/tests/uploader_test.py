@@ -668,16 +668,18 @@ class TestPrintSummary:
         uploader.print_summary()
 
         assert "UPLOAD SUMMARY:\n" in caplog.text
+        # Tests assert on the body of the summary table; the surrounding
+        # <green>/</green> color markers are loguru tags whose preservation in
+        # caplog.text depends on platform-specific colorize defaults.
         assert (
             "\n".join(
                 (
-                    "<green>SUCCESSFUL UPLOADS:",
+                    "SUCCESSFUL UPLOADS:",
                     "╒═════════════════╤════════╤═════════════╤════════════════╕",
                     "│ NAME            │ TYPE   │ PACK NAME   │ PACK VERSION   │",
                     "╞═════════════════╪════════╪═════════════╪════════════════╡",
                     "│ DummyScript.yml │ Script │ DummyPack   │ 1.0.0          │",
                     "╘═════════════════╧════════╧═════════════╧════════════════╛",
-                    "</green>",
                 )
             )
             in caplog.text
@@ -705,17 +707,17 @@ class TestPrintSummary:
         logged = [record.message for record in caplog.records]
 
         assert logged[0] == "UPLOAD SUMMARY:\n"
-        assert logged[1] == "\n".join(
+        expected_body = "\n".join(
             (
-                "<red>FAILED UPLOADS:",
+                "FAILED UPLOADS:",
                 "╒═════════════════╤════════╤════════════╕",
                 "│ NAME            │ TYPE   │ ERROR      │",
                 "╞═════════════════╪════════╪════════════╡",
                 "│ DummyScript.yml │ Script │ Some Error │",
                 "╘═════════════════╧════════╧════════════╛",
-                "</red>",
             )
         )
+        assert expected_body in logged[1]
 
     def test_print_summary_version_mismatch(
         self, demisto_client_configure, mocker, repo, caplog
@@ -750,13 +752,12 @@ class TestPrintSummary:
         assert (
             "\n".join(
                 (
-                    "<yellow>NOT UPLOADED DUE TO VERSION MISMATCH:",
+                    "NOT UPLOADED DUE TO VERSION MISMATCH:",
                     "╒═════════════╤════════╤═════════════════╤═════════════════════╤═══════════════════╕",
                     "│ NAME        │ TYPE   │ XSOAR Version   │ FILE_FROM_VERSION   │ FILE_TO_VERSION   │",
                     "╞═════════════╪════════╪═════════════════╪═════════════════════╪═══════════════════╡",
                     "│ script0.yml │ Script │ 6.6.0           │ 0.0.0               │ 1.2.3             │",
                     "╘═════════════╧════════╧═════════════════╧═════════════════════╧═══════════════════╛",
-                    "</yellow>",
                 )
             )
         ) in caplog.text

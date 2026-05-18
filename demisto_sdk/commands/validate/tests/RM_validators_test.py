@@ -1,6 +1,8 @@
 from pathlib import PosixPath
 
 import more_itertools
+import sys
+
 import pytest
 from click.exceptions import BadParameter
 
@@ -948,6 +950,10 @@ def test_missing_playbook_image_validator_image_exists_wrong_path():
     assert len(result) == 1
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="PosixPath cannot be instantiated on Windows",
+)
 def test_missing_playbook_image_validator_image_exists_with_path():
     """
     Given

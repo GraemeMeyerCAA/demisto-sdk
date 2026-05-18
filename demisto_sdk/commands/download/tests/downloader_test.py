@@ -877,8 +877,10 @@ class TestDownloadNewFile:
         output_dir_path.mkdir(parents=True)
 
         files = [
-            file.replace("output_path", str(output_dir_path)).replace(
-                "basename", basename
+            os.path.normpath(
+                file.replace("output_path", str(output_dir_path)).replace(
+                    "basename", basename
+                )
             )
             for file in raw_files
         ]
@@ -919,8 +921,10 @@ class TestDownloadNewFile:
         output_dir_path.mkdir(parents=True)
 
         files = [
-            file.replace("output_path", str(output_dir_path)).replace(
-                "basename", basename
+            os.path.normpath(
+                file.replace("output_path", str(output_dir_path)).replace(
+                    "basename", basename
+                )
             )
             for file in raw_files
         ]

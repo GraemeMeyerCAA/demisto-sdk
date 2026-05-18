@@ -1362,7 +1362,9 @@ def create_common_entity_data(
         data["name"] = name
     if display_name:
         data["display_name"] = display_name
-    data["file_path"] = path
+    # Stable cross-platform format: id_set entries always use forward slashes
+    # so dependency/lookup comparisons are byte-identical on Linux and Windows.
+    data["file_path"] = str(path).replace("\\", "/") if path else path
     data["source"] = list(get_current_repo())
     if to_version:
         data["toversion"] = to_version

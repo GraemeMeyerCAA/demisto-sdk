@@ -1,3 +1,4 @@
+import socket
 from typing import Optional
 
 import pytest
@@ -15,6 +16,18 @@ INVALID_MD = f"{git_path()}/demisto_sdk/tests/test_files/README-invalid.md"
 INVALID_MD_IN_PACK = f"{git_path()}/demisto_sdk/tests/test_files/Packs/DummyPack2"
 
 
+def _mdx_server_reachable() -> bool:
+    try:
+        with socket.create_connection(("127.0.0.1", 6161), timeout=0.5):
+            return True
+    except OSError:
+        return False
+
+
+@pytest.mark.skipif(
+    not _mdx_server_reachable(),
+    reason="requires MDX server (Docker or local Node) on 127.0.0.1:6161",
+)
 def test_readme_markdown_fixes():
     """
     Given: Some markdown file with lint errors

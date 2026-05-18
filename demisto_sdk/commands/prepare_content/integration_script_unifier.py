@@ -266,7 +266,11 @@ class IntegrationScriptUnifier(Unifier):
         )
         detailed_description = ""
         if desc_data:
-            desc_data = desc_data.decode("utf-8")
+            # Normalise CRLF to LF so the unified YAML is identical across
+            # platforms (Windows text-mode round-trips can otherwise duplicate
+            # newlines when the description is later written through a text
+            # NamedTemporaryFile).
+            desc_data = desc_data.decode("utf-8").replace("\r\n", "\n")
             if not is_script_package and marketplace:
                 pack_name = package_path.parents[1].name  # Get the name of the pack
                 with tempfile.NamedTemporaryFile(mode="r+", delete=False) as tempf:
@@ -305,8 +309,10 @@ class IntegrationScriptUnifier(Unifier):
         data = None
         found_data_path = None
         if not is_script_package and data_path:
-            found_data_path = data_path[0]
-            with open(found_data_path, "rb") as data_file:
+            # Normalise to forward-slash so downstream consumers (tests, YAML
+            # output) see the same value on Linux and Windows.
+            found_data_path = data_path[0].replace(os.sep, "/")
+            with open(data_path[0], "rb") as data_file:
                 data = data_file.read()
 
         return data, found_data_path

@@ -1,4 +1,5 @@
 import filecmp
+import os
 import tempfile
 
 import pytest
@@ -82,12 +83,22 @@ def test_return_raw_outputs_from_log_also_write_log(
 
     """
     mocker.patch.object(DefaultApi, "download_file", return_value=file_path)
-    temp_file = tempfile.NamedTemporaryFile()
-    runner = Runner("Query", debug_path=temp_file.name, json_to_outputs=True)
-    temp = runner._return_context_dict_from_log(["123"])
-    assert temp == expected_output
-    assert filecmp.cmp(file_path, temp_file.name)
+    # delete=False + manual unlink: on Windows, NamedTemporaryFile keeps an
+    # exclusive handle until close(), which blocks the Runner from re-opening
+    # the path for writing.
+    temp_file = tempfile.NamedTemporaryFile(delete=False)
+    temp_path = temp_file.name
     temp_file.close()
+    try:
+        runner = Runner("Query", debug_path=temp_path, json_to_outputs=True)
+        temp = runner._return_context_dict_from_log(["123"])
+        assert temp == expected_output
+        assert filecmp.cmp(file_path, temp_path)
+    finally:
+        try:
+            os.unlink(temp_path)
+        except OSError:
+            pass
 
 
 def test_return_raw_outputs_from_log_with_raw_response_flag(

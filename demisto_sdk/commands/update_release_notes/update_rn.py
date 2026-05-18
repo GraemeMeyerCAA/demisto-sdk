@@ -940,7 +940,9 @@ class UpdateRN:
         """
         _new_version = input_version.replace(".", "_")
         new_version = _new_version.replace("_prerelease", "")
-        return os.path.join(self.pack_path, "ReleaseNotes", f"{new_version}.md")
+        # Always emit a posix-style path so downstream comparisons (against
+        # literal "Packs/Pack/ReleaseNotes/..." strings) match on every OS.
+        return os.path.join(self.pack_path, "ReleaseNotes", f"{new_version}.md").replace(os.sep, "/")
 
     @staticmethod
     def find_corresponding_yml(file_path) -> str:

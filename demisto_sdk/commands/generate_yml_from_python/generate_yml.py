@@ -97,8 +97,10 @@ class YMLGenerator:
                     not str(err)
                     == "module 'metadata_collector' has no attribute 'metadata_collector'"
                 ):
-                    logger.error(traceback.format_exc())
-                    logger.error(f"<red>{err}</red>")
+                    # Tracebacks contain '<module>' frames that the loguru
+                    # color-tag parser would reject — bypass tag parsing here.
+                    logger.opt(colors=False).error(traceback.format_exc())
+                    logger.opt(colors=False).error(f"<red>{err}</red>")
                 return False
 
     def generate(self):

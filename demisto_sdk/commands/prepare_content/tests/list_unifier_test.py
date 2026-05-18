@@ -113,7 +113,8 @@ def test_insert_data_to_json_with_warning(mocker, tmpdir, caplog):
         json_list, list_dir_path / "_data.txt"
     )
     assert json_unified["data"] == "data"
+    expected_json_path = list_dir_path / f"{list_dir_path.name}.json"
     assert (
-        f"data section is not empty in {list_dir_path}/{list_dir_path.name}.json file. "
+        f"data section is not empty in {expected_json_path} file. "
         f"It should be blank or a dash(-)."
     ) in caplog.text

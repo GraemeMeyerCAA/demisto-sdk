@@ -43,10 +43,16 @@ class TextFile(File):
             PACKS_WHITELIST_FILE_NAME,
         } or path.suffix.lower() in {".md", ".py", ".txt", ".xif"}
 
+    @staticmethod
+    def _normalize_newlines(text: str) -> str:
+        # Mirror Python's universal-newlines read mode: collapse CRLF/CR to LF
+        # so regex/splitlines-based consumers work identically on Windows.
+        return text.replace("\r\n", "\n").replace("\r", "\n")
+
     def load(self, file_content: bytes) -> Any:
         path = self.safe_path
         try:
-            return file_content.decode(self.encoding)
+            return self._normalize_newlines(file_content.decode(self.encoding))
         except UnicodeDecodeError:
             original_file_encoding = UnicodeDammit(file_content).original_encoding
             if path:
@@ -60,7 +66,7 @@ class TextFile(File):
                     f"trying to decode the file with original encoding {original_file_encoding}"
                 )
             try:
-                return UnicodeDammit(file_content).unicode_markup
+                return self._normalize_newlines(UnicodeDammit(file_content).unicode_markup)
             except UnicodeDecodeError as e:
                 if path:
                     logger.error(f"Could not auto detect encoding for file {path}")

@@ -44,14 +44,27 @@ class RepositoryParser:
             packs_to_parse = tuple(self.iter_packs())
         try:
             logger.debug("Parsing packs...")
-            with multiprocessing.Pool(processes=cpu_count()) as pool:
-                for pack in pool.imap_unordered(
-                    RepositoryParser.parse_pack, packs_to_parse
-                ):
+            # On Windows (spawn start method) each multiprocessing worker
+            # incurs a heavy startup cost re-importing the SDK. For small
+            # repositories — common in the test suite — the inline path is
+            # orders of magnitude faster and sidesteps spawn-time deadlocks.
+            SMALL_REPO = 8
+            if len(packs_to_parse) <= SMALL_REPO:
+                for pack_path in packs_to_parse:
+                    pack = RepositoryParser.parse_pack(pack_path)
                     if pack:
                         self.packs.append(pack)
                         if progress_bar:
                             progress_bar.update(1)
+            else:
+                with multiprocessing.Pool(processes=cpu_count()) as pool:
+                    for pack in pool.imap_unordered(
+                        RepositoryParser.parse_pack, packs_to_parse
+                    ):
+                        if pack:
+                            self.packs.append(pack)
+                            if progress_bar:
+                                progress_bar.update(1)
         except Exception as e:
             logger.error(e)
             logger.error(traceback.format_exc())
@@ -81,7 +94,11 @@ class RepositoryParser:
         Yields:
             Iterator[Path]: A pack path.
         """
-        packs_folder: Path = self.path / PACKS_FOLDER
+        # Resolve to an absolute path so that paths shipped to multiprocessing
+        # workers via Pool.imap_unordered remain valid regardless of the
+        # worker's current working directory (relevant on Windows where the
+        # `spawn` start method does not always carry the parent's CWD).
+        packs_folder: Path = (self.path / PACKS_FOLDER).resolve()
         if packs_to_parse:
             for pack in packs_to_parse:
                 path = packs_folder / pack

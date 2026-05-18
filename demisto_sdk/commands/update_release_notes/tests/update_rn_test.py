@@ -2,6 +2,7 @@ import glob
 import os
 import pathlib
 import shutil
+import socket
 from collections import Counter
 from copy import deepcopy
 from pathlib import Path
@@ -9,6 +10,20 @@ from typing import Dict, Optional
 from unittest import mock
 
 import pytest
+
+
+def _mdx_server_reachable() -> bool:
+    try:
+        with socket.create_connection(("127.0.0.1", 6161), timeout=0.5):
+            return True
+    except OSError:
+        return False
+
+
+requires_mdx_server = pytest.mark.skipif(
+    not _mdx_server_reachable(),
+    reason="requires MDX server (Docker or local Node) on 127.0.0.1:6161",
+)
 
 from demisto_sdk.commands.common.constants import (
     DEFAULT_CONTENT_ITEM_TO_VERSION,
@@ -246,6 +261,7 @@ class TestRNUpdate:
             "###### Early Containment:\n###### Investigation:\n###### Containment:\n\n"
         )
 
+    @requires_mdx_server
     @mock.patch.object(UpdateRN, "get_master_version")
     def test_build_rn_template_markdown_valid(self, mock_master, mocker):
         """
