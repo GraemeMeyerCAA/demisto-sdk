@@ -3485,7 +3485,7 @@ class TestParsingRules:
         assert "pack" in parsing_rule_result.keys()
 
         assert parsing_rule_result["name"] == "Parsing Rule"
-        assert parsing_rule_result["file_path"] == parsing_rule.yml.path
+        assert parsing_rule_result["file_path"] == parsing_rule.yml.path.replace("\\", "/")
         assert parsing_rule_result["pack"] == pack.name
 
         assert f"adding {parsing_rule.yml.path} to id_set" in caplog.text
@@ -3523,7 +3523,7 @@ class TestModelingRules:
         assert "pack" in modeling_rule_result.keys()
 
         assert modeling_rule_result["name"] == "Modeling Rule"
-        assert modeling_rule_result["file_path"] == modeling_rule.yml.path
+        assert modeling_rule_result["file_path"] == modeling_rule.yml.path.replace("\\", "/")
         assert modeling_rule_result["pack"] == pack.name
 
         assert f"adding {modeling_rule.yml.path} to id_set" in caplog.text
@@ -3571,7 +3571,7 @@ class TestCorrelationRules:
             correlation_rule_result["name"]
             == correlation_rule._tmp_path.parts[-1].split(".")[0]
         )
-        assert correlation_rule_result["file_path"] == correlation_rule.path
+        assert correlation_rule_result["file_path"] == correlation_rule.path.replace("\\", "/")
         assert correlation_rule_result["pack"] == pack.name
 
         assert f"adding {correlation_rule._tmp_path} to id_set" in caplog.text
@@ -3619,7 +3619,7 @@ class TestXSIAMDashboards:
             xsiam_dashboard_result["name"]
             == xsiam_dashboard._file_path.parts[-1].split(".")[0]
         )
-        assert xsiam_dashboard_result["file_path"] == xsiam_dashboard.path
+        assert xsiam_dashboard_result["file_path"] == xsiam_dashboard.path.replace("\\", "/")
         assert xsiam_dashboard_result["pack"] == pack.name
 
         assert f"adding {xsiam_dashboard._file_path} to id_set" in caplog.text
@@ -3667,7 +3667,7 @@ class TestXSIAMReports:
             xsiam_report_result["name"]
             == xsiam_report._file_path.parts[-1].split(".")[0]
         )
-        assert xsiam_report_result["file_path"] == xsiam_report.path
+        assert xsiam_report_result["file_path"] == xsiam_report.path.replace("\\", "/")
         assert xsiam_report_result["pack"] == pack.name
 
         assert f"adding {xsiam_report._file_path} to id_set" in caplog.text
@@ -3707,7 +3707,7 @@ class TestTriggers:
         assert "pack" in trigger_result.keys()
 
         assert trigger_result["name"] == trigger._file_path.parts[-1].split(".")[0]
-        assert trigger_result["file_path"] == trigger.path
+        assert trigger_result["file_path"] == trigger.path.replace("\\", "/")
         assert trigger_result["pack"] == pack.name
 
         assert f"adding {trigger._file_path} to id_set" in caplog.text
@@ -3758,7 +3758,7 @@ class TestXDRCTemplates:
             xdrc_template_result["name"]
             == xdrc_template._file_path.parts[-1].split(".")[0]
         )
-        assert xdrc_template_result["file_path"] == xdrc_template.path
+        assert xdrc_template_result["file_path"] == xdrc_template.path.replace("\\", "/")
         assert xdrc_template_result["pack"] == pack.name
 
         assert f"adding {xdrc_template._file_path} to id_set" in caplog.text
@@ -3801,7 +3801,7 @@ class TestLayoutRules:
         assert (
             layout_rule_result["name"] == layout_rule._file_path.parts[-1].split(".")[0]
         )
-        assert layout_rule_result["file_path"] == layout_rule.path
+        assert layout_rule_result["file_path"] == layout_rule.path.replace("\\", "/")
         assert layout_rule_result["pack"] == pack.name
 
         assert f"adding {layout_rule._file_path} to id_set" in caplog.text

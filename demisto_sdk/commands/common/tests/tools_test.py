@@ -693,7 +693,10 @@ class TestGetRemoteFileLocally:
         assert some_file_json["id"] == "some_file"
 
     def teardown_method(self):
-        shutil.rmtree(self.REPO_NAME)
+        # Windows holds open file handles on .git/objects from the just-run
+        # GitPython operations; ignore the resulting PermissionError and
+        # leave the dir for the next run's setup_method to wipe.
+        shutil.rmtree(self.REPO_NAME, ignore_errors=True)
 
 
 class TestServerVersionCompare:
