@@ -207,7 +207,9 @@ def test_insert_description_to_yml():
         f"{git_path()}/demisto_sdk/tests/test_files/Packs/VulnDB/VulnDB_description.md",
         "rb",
     ) as desc_file:
-        desc_data = desc_file.read().decode("utf-8")
+        # Production normalises CRLF -> LF when reading the description;
+        # mirror that here so the assertion holds on Windows.
+        desc_data = desc_file.read().decode("utf-8").replace("\r\n", "\n")
     integration_doc_link = (
         "\n\n---\n[View Integration Documentation]"
         "(https://xsoar.pan.dev/docs/reference/integrations/vuln-db)"

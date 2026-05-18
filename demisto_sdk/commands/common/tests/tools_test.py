@@ -654,6 +654,11 @@ class TestGetRemoteFileLocally:
     main_branch = DEMISTO_GIT_PRIMARY_BRANCH
 
     def setup_method(self):
+        # Clean up if a prior run left behind state — on Windows the test
+        # process may not have GC'd the repo dir, and `git checkout -b X`
+        # errors if branch X already exists.
+        if os.path.isdir(self.REPO_NAME):
+            shutil.rmtree(self.REPO_NAME, ignore_errors=True)
         # create local git repo
         example_repo = GitUtil.REPO_CLS.init(self.REPO_NAME)
         origin_branch = self.main_branch

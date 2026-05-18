@@ -879,14 +879,21 @@ def safe_read_unicode(bytes_data: bytes) -> str:
         str: A string representation of the parsed bytes.
     """
     try:
-        return bytes_data.decode("utf-8")
+        # Mirror Python's universal-newlines text-mode read so callers on
+        # Windows do not see CRLF where Linux callers see LF (eg. unified
+        # YAML output remains byte-identical across OSes).
+        return bytes_data.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")
 
     except UnicodeDecodeError:
         try:
             logger.debug(
                 "Could not read data using UTF-8 encoding. Trying to auto-detect encoding..."
             )
-            return UnicodeDammit(bytes_data).unicode_markup or ""
+            return (
+                (UnicodeDammit(bytes_data).unicode_markup or "")
+                .replace("\r\n", "\n")
+                .replace("\r", "\n")
+            )
 
         except UnicodeDecodeError:
             logger.error("Could not auto-detect encoding.")
