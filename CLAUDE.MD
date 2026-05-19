@@ -10,4 +10,19 @@ The SDK will also fail or auto-abort if you don't have Git configured and initia
 
 The SDK / vs code extension do appear to support Python virtual environments, and sometimes even recommends them.
 
-Our job is to determine exactly why the demisto-sdk doesn't run natively on Windows, and how it might be fixed. 
+Our job is to determine exactly why the demisto-sdk doesn't run natively on Windows, and how it might be fixed.
+
+## Expected test failures
+
+When running the test suite, the following failures are **expected and not Windows-specific** — they reproduce identically on a clean Ubuntu install with the same Neo4j setup. Do not treat them as Windows regressions.
+
+- **All `GR_validators_test.py` failures with `apoc.export.graphml.all` in the traceback.** Confirmed identical on Ubuntu (see `ubuntu-test-suite-output.txt`). Root cause: APOC's file-export procedure is disabled by default in Neo4j. To run these green, add to `neo4j.conf` on whichever platform:
+  ```
+  apoc.export.file.enabled=true
+  dbms.security.procedures.unrestricted=apoc.*
+  ```
+  and restart Neo4j. This is a Neo4j/APOC configuration issue, not a code issue.
+
+- **Docker-coupled commands (`lint`, `pre-commit`, `test-content`) tests.** Out of scope for the Windows port — these require Docker + a Linux container to execute integration code. They are expected to fail or skip on Windows without a working Docker daemon.
+
+See `WINDOWS_STATUS.md` for the full port summary.
