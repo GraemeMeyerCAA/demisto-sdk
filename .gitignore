@@ -120,3 +120,25 @@ neo4j-data
 # log files
 demisto_sdk_debug.log
 demisto_sdk_debug.log.*
+
+# Windows port — test artifacts and working notes
+windows_test_xml/
+WINDOWS_FAILURES_*.log
+ubuntu-test-suite-output.txt
+analyze_windows_failures.py
+backup_prompt_ai_*.txt
+history_prompt.txt
+run_validate_only.ps1
+
+# Test runs leak content-pack scaffolding into the repo root
+/Dashboards/
+/IncidentFields/
+/IncidentTypes/
+/IndicatorFields/
+/Integrations/
+/Playbook/
+/Tests/
+/Packs/Base/
+/playbook-TestPlaybook_Test.yml
+/configfile_test.json
+demisto_sdk/tests/test_files/fake_pack/_pack_metadata.json
