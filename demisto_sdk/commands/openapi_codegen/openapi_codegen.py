@@ -1038,7 +1038,7 @@ class OpenAPIIntegration:
         logger.debug("Creating python file...")
         python_file = os.path.join(directory, f"{self.base_name}.py")
         try:
-            with open(python_file, "w") as fp:
+            with open(python_file, "w", encoding="utf-8") as fp:
                 fp.write(self.generate_python_code())
                 return python_file
         except Exception as err:
@@ -1057,7 +1057,7 @@ class OpenAPIIntegration:
         logger.debug("Creating yaml file...")
         yaml_file = os.path.join(directory, f"{self.base_name}.yml")
         try:
-            with open(yaml_file, "w") as fp:
+            with open(yaml_file, "w", encoding="utf-8") as fp:
                 yaml.dump(self.generate_yaml().to_dict(), fp)
             return yaml_file
         except Exception as err:
@@ -1077,7 +1077,7 @@ class OpenAPIIntegration:
         logger.debug("Creating configuration file...")
         config_file = os.path.join(directory, f"{self.base_name}_config.json")
         try:
-            with open(config_file, "w") as fp:
+            with open(config_file, "w", encoding="utf-8") as fp:
                 json.dump(config, fp, indent=4)
             return config_file
         except Exception as err:

@@ -687,7 +687,7 @@ class IntegrationGeneratorConfig:
             xsoar_integration = self.generate_integration_yml(code)
 
             path = Path(output_dir, f"integration-{self.name}.yml")
-            with open(path, mode="w") as f:
+            with open(path, mode="w", encoding="utf-8") as f:
                 yaml.dump(xsoar_integration.to_dict(), f)
 
                 logger.info(f"Generated integration yml at:\n{os.path.abspath(path)}")
@@ -698,13 +698,13 @@ class IntegrationGeneratorConfig:
         Path(package_dir).mkdir(exist_ok=True)
 
         code = self.generate_integration_python_code()
-        with open(Path(package_dir, f"{self.name}.py"), mode="w") as f:
+        with open(Path(package_dir, f"{self.name}.py"), mode="w", encoding="utf-8") as f:
             f.write(code)
 
         integration_obj = self.generate_integration_yml()
         try:
             logger.debug("Creating yml file...")
-            with open(Path(package_dir, f"{self.name}.yml"), "w") as fp:
+            with open(Path(package_dir, f"{self.name}.yml"), "w", encoding="utf-8") as fp:
                 yaml.dump(integration_obj.to_dict(), fp)
 
         except Exception as err:

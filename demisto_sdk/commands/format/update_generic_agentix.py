@@ -81,7 +81,7 @@ class GenericAgentixFormat(BaseUpdate):
         """Safely saves formatted YML data to destination file."""
         if self.source_file != self.output_file:
             logger.debug(f"Saving output YML file to {self.output_file} \n")
-        with open(self.output_file, "w") as f:
+        with open(self.output_file, "w", encoding="utf-8") as f:
             yaml.dump(self.data, f)  # ruamel preservers multilines
 
     def update_yml(

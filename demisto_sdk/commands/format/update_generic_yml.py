@@ -135,7 +135,7 @@ class BaseUpdateYML(BaseUpdate):
         """Safely saves formatted YML data to destination file."""
         if self.source_file != self.output_file:
             logger.debug(f"Saving output YML file to {self.output_file} \n")
-        with open(self.output_file, "w") as f:
+        with open(self.output_file, "w", encoding="utf-8") as f:
             yaml.dump(self.data, f)  # ruamel preservers multilines
 
     def copy_tests_from_old_file(self):
@@ -382,7 +382,7 @@ class BaseUpdateYML(BaseUpdate):
 
     def _save_to_conf_json(self, conf_json_content: Dict) -> None:
         """Save formatted JSON data to destination file."""
-        with open(CONF_PATH, "w") as file:
+        with open(CONF_PATH, "w", encoding="utf-8") as file:
             json.dump(conf_json_content, file, indent=4)
 
     def update_deprecate(self, file_type=None):

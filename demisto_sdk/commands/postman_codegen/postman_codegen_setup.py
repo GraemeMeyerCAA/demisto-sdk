@@ -78,7 +78,9 @@ def postman_codegen(
 
     if config_out:
         path = Path(output) / f"config-{postman_config.name}.json"
-        path.write_text(json.dumps(postman_config.to_dict(), indent=4))
+        path.write_text(
+            json.dumps(postman_config.to_dict(), indent=4), encoding="utf-8"
+        )
         typer.echo(f"Config file generated at:\n{str(path.absolute())}")
     else:
         # Generate integration YML

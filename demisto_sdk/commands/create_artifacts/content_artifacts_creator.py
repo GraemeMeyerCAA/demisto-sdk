@@ -1507,7 +1507,7 @@ def modify_common_server_constants(
         f"CONTENT_BRANCH_NAME = '{branch_name}'",
         file_content_new,
     )
-    code_path.write_text(file_content_new)
+    code_path.write_text(file_content_new, encoding="utf-8")
 
 
 ########################

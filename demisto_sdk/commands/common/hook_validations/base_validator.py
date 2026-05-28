@@ -400,7 +400,7 @@ class BaseValidator:
             **output,
         }
         json_contents.append(formatted_error_output)
-        with open(self.json_file_path, "w") as f:
+        with open(self.json_file_path, "w", encoding="utf-8") as f:
             json.dump(json_contents, f, indent=4)
 
     @staticmethod

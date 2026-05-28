@@ -190,7 +190,7 @@ class CoverageSummary:
             "total_coverage": original_summary["totals"]["percent_covered"],
         }
 
-        with open(min_summary_path, "w") as min_summary_file:
+        with open(min_summary_path, "w", encoding="utf-8") as min_summary_file:
             json.dump(min_summary, min_summary_file)
 
     def get_files_summary(self) -> Dict[str, float]:
@@ -223,7 +223,7 @@ class CoverageSummary:
         resp.raise_for_status()
         data = resp.json()
         if self.use_cache and self.cache_dir:
-            with open(json_path, "w") as fp:
+            with open(json_path, "w", encoding="utf-8") as fp:
                 json.dump(data, fp)
 
         return data["files"]

@@ -108,7 +108,7 @@ class ReadmeFormat(BaseUpdate):
         """Safely saves formatted data to destination file."""
         if self.source_file != self.output_file:
             logger.debug(f"Saving output description file to {self.output_file} \n")
-        with open(self.output_file, "w") as f:
+        with open(self.output_file, "w", encoding="utf-8") as f:
             f.write(self.readme_content)
         f.close()
 

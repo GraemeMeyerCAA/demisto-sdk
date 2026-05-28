@@ -471,7 +471,8 @@ class DockerBase:
             f"create_image is called with base_image={base_image}, image={image}"
         )
         self.requirements.write_text(
-            "\n".join(install_packages) if install_packages else ""
+            "\n".join(install_packages) if install_packages else "",
+            encoding="utf-8",
         )
         logger.debug(f"Trying to pull image {base_image}")
         self.pull_image(base_image)

@@ -177,7 +177,7 @@ class YmlSplitter:
                     shutil.copy(yml_readme, readme)
                 else:
                     # open an empty file
-                    with open(readme, "w"):
+                    with open(readme, "w", encoding="utf-8"):
                         pass
         logger.debug(
             f"Finished splitting the yml file - you can find the split results here: {output_path}"
@@ -224,7 +224,7 @@ class YmlSplitter:
             code_file_path = code_file_path.parent / (code_file_path.name + ext)
 
         logger.debug(f"Extracting code to: {code_file_path} ...")
-        with open(code_file_path, "w") as code_file:
+        with open(code_file_path, "w", encoding="utf-8") as code_file:
             if lang_type == TYPE_PYTHON and self.demisto_mock:
                 code_file.write("import demistomock as demisto  # noqa: F401\n")
                 self.lines_inserted_at_code_start += 1
@@ -351,7 +351,7 @@ class YmlSplitter:
             self.api_module_path = os.path.join(
                 "./Packs", "ApiModules", "Scripts", module_name, module_name + ".py"
             )
-            with open(self.api_module_path, "w") as f:
+            with open(self.api_module_path, "w", encoding="utf-8") as f:
                 f.write("from CommonServerPython import *  # noqa: F401\n")
                 f.write("import demistomock as demisto  # noqa: F401\n")
                 f.write("\n".join(updated_lines))

@@ -113,7 +113,7 @@ class CoverageReport:
         if "text" in self.report_types:
             txt_file_path = os.path.join(self.report_dir, "coverage.txt")
             logger.info(f"exporting txt coverage report to {txt_file_path}")
-            with open(txt_file_path, "w") as txt_file:
+            with open(txt_file_path, "w", encoding="utf-8") as txt_file:
                 txt_file.write(self.report_str)
         if "html" in self.report_types:
             export_report(

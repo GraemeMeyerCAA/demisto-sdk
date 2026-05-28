@@ -1435,7 +1435,7 @@ class TestResults:
             self.empty_files.append(playbook_id)
 
     def write_artifacts_file(self, file_name: str, content: Iterable[str]):
-        with open(self.artifacts_path / file_name, "w") as file:
+        with open(self.artifacts_path / file_name, "w", encoding="utf-8") as file:
             file.write("\n".join(content))
 
     def create_result_files(self):
@@ -2958,7 +2958,7 @@ class ContentStatusUpdater:
         Saves the updated content status back to the specified file path.
         """
         Path(self.content_status_path.name).mkdir(exist_ok=True)
-        with open(self.content_status_path, "w") as content_file:
+        with open(self.content_status_path, "w", encoding="utf-8") as content_file:
             json.dump(self.content_status, content_file, indent=4)
             logging.info(
                 f"Saved updated content_status.json to {self.content_status_path}"

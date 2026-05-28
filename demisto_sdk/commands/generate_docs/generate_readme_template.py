@@ -4,7 +4,7 @@ from demisto_sdk.commands.generate_docs.readme_templates import README_TEMPLATES
 
 
 def generate_readme_template(input_path: Path, readme_template: str):
-    with open(input_path, "a") as file_object:
+    with open(input_path, "a", encoding="utf-8") as file_object:
         template = README_TEMPLATES.get(readme_template, "")
         if not template:
             raise Exception(

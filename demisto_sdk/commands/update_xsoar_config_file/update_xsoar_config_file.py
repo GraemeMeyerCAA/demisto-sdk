@@ -155,5 +155,5 @@ class XSOARConfigFileUpdater:
         return config_file_info
 
     def set_xsoar_config_data(self, config_file_info):
-        with open(self.file_path, "w") as config_file:
+        with open(self.file_path, "w", encoding="utf-8") as config_file:
             json.dump(config_file_info, config_file, indent=4)

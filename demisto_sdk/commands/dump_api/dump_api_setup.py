@@ -55,5 +55,5 @@ def dump_api(
         output_path = output_path / "demisto-sdk-api.json"
 
     # Write the JSON output to the specified file
-    output_path.write_text(json.dumps(output_json, indent=4))
+    output_path.write_text(json.dumps(output_json, indent=4), encoding="utf-8")
     typer.echo(f"API dumped successfully to {output_path}")

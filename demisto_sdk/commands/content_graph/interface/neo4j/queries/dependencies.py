@@ -179,6 +179,6 @@ RETURN
     if (artifacts_folder := os.getenv("ARTIFACTS_FOLDER")) and Path(
         artifacts_folder
     ).exists():
-        with open(f"{artifacts_folder}/depends_on.json", "w") as fp:
+        with open(f"{artifacts_folder}/depends_on.json", "w", encoding="utf-8") as fp:
             json.dump(outputs, fp, indent=4)
     return outputs

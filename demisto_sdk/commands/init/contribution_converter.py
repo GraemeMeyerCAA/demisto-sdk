@@ -423,7 +423,7 @@ class ContributionConverter:
 
         if self.pack_readme:
             Path(self.working_dir_path, PACKS_README_FILE_NAME).write_text(
-                self.pack_readme
+                self.pack_readme, encoding="utf-8"
             )
 
         return readmes_generated
@@ -826,7 +826,7 @@ class ContributionConverter:
         )
         metadata_dict = ContributionConverter.create_pack_metadata(data=metadata_dict)
         metadata_path = str(Path(self.working_dir_path, "pack_metadata.json"))
-        with open(metadata_path, "w") as pack_metadata_file:
+        with open(metadata_path, "w", encoding="utf-8") as pack_metadata_file:
             json.dump(metadata_dict, pack_metadata_file, indent=4)
 
     @staticmethod

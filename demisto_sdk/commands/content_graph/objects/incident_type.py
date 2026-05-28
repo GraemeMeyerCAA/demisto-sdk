@@ -44,7 +44,7 @@ class IncidentType(ContentItem, content_type=ContentType.INCIDENT_TYPE):  # type
     ) -> None:
         with TemporaryDirectory() as dir:
             file_path = Path(dir, self.normalize_name)
-            with open(file_path, "w") as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 # Wrapping the dictionary with a list, as that's what the server expects
                 json.dump([self.prepare_for_upload(marketplace=marketplace)], f)
             response = client.import_incident_types_handler(str(file_path))

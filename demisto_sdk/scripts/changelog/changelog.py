@@ -145,7 +145,7 @@ class Changelog:
         log = INITIAL_LOG
         log["pr_number"] = int(pr_num)
 
-        with (CHANGELOG_FOLDER / f"{pr_num}.yml").open("w") as f:
+        with (CHANGELOG_FOLDER / f"{pr_num}.yml").open("w", encoding="utf-8") as f:
             yaml.dump(log, f)
 
         logger.info(f"Created changelog template at .changelog/{pr_num}.yml")
@@ -322,7 +322,7 @@ def compile_changelog_md(
 
 
 def update_changelog_md(new_changelog: str) -> None:
-    CHANGELOG_MD_FILE.write_text(new_changelog)
+    CHANGELOG_MD_FILE.write_text(new_changelog, encoding="utf-8")
 
 
 def clear_changelogs_folder() -> None:

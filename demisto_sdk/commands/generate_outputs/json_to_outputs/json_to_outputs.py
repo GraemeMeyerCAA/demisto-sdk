@@ -255,7 +255,7 @@ def json_to_outputs(
         yaml_output = parse_json(input_json, command, prefix, interactive, descriptions)
 
         if output:
-            with open(output, "w") as yf:
+            with open(output, "w", encoding="utf-8") as yf:
                 yf.write(yaml_output)
 
                 logger.info(f"<green>Outputs file was saved to :\n{output}</green>")

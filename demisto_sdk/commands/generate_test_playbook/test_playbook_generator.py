@@ -419,7 +419,7 @@ class PlaybookTestsGenerator:
                 f"it will be overwritten.</yellow>"
             )
 
-        with open(self.test_playbook_yml_path, "w") as yf:
+        with open(self.test_playbook_yml_path, "w", encoding="utf-8") as yf:
             yaml.dump(test_playbook.to_dict(), yf)
 
             logger.info(

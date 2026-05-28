@@ -452,7 +452,7 @@ def create_xif_file(
 
     xif_rule = replace_last_char(xif_rule)
 
-    with open(outputfile_xif, "w") as f:
+    with open(outputfile_xif, "w", encoding="utf-8") as f:
         f.write(xif_rule)
 
     logger.info("Finished generating xif file\n")
@@ -481,7 +481,7 @@ def create_scheme_file(
                 name_type_dict[name] = raw_event_data.create_schema_types()
     modeling_rules_json = {dataset_name: name_type_dict}
 
-    with open(outputfile_schema, "w") as f:
+    with open(outputfile_schema, "w", encoding="utf-8") as f:
         json.dump(modeling_rules_json, f, indent=4)
     logger.info("Finished creating modeling rules schema\n")
 
@@ -517,7 +517,7 @@ def create_yml_file(outputfile_yml: Path, vendor: str, product: str) -> None:
         "tags": f"{product}",
     }
 
-    with open(outputfile_yml, "w") as f:
+    with open(outputfile_yml, "w", encoding="utf-8") as f:
         yaml.dump(yml_file, f)
 
     logger.info("Finished creating modeing rules yml file\n")

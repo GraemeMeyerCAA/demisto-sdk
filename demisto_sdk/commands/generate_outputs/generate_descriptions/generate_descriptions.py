@@ -294,7 +294,7 @@ def generate_ai_descriptions(
 
             # Backup the prompt for later usage (in case we cleared the prompt)
             if DEBUG_PROMPT:
-                with open(f"backup_prompt_ai_{c_index}.txt", "w") as f:
+                with open(f"backup_prompt_ai_{c_index}.txt", "w", encoding="utf-8") as f:
                     f.write(get_current_prompt())
 
     except Exception as ex:
@@ -302,5 +302,5 @@ def generate_ai_descriptions(
 
     # backup all of the prompts (without truncating)
     if DEBUG_PROMPT:
-        with open("history_prompt.txt", "w") as f:
+        with open("history_prompt.txt", "w", encoding="utf-8") as f:
             f.write(json.dumps(PROMPT_HISTORY))

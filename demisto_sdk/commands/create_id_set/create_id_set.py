@@ -118,7 +118,7 @@ class IDSetCreator:
             if not exists(self.output):
                 intermediate_dirs = os.path.dirname(os.path.abspath(self.output))
                 os.makedirs(intermediate_dirs, exist_ok=True)
-            with open(self.output, "w+") as id_set_file:
+            with open(self.output, "w+", encoding="utf-8") as id_set_file:
                 json.dump(self.id_set, id_set_file, indent=4)
 
 

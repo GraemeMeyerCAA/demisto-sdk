@@ -207,7 +207,7 @@ class PreCommitRunner:
         )
         # Only writing failed hook results.
         if json_output_path and completed_process.returncode != 0:
-            with open(json_output_path, "w") as json_file:
+            with open(json_output_path, "w", encoding="utf-8") as json_file:
                 json = JSON_Handler()
                 json.dump(completed_process.__dict__, json_file, indent=4)
 

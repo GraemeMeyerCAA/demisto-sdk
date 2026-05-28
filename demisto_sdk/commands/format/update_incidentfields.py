@@ -129,7 +129,7 @@ class IncidentFieldJSONFormat(BaseUpdateJSON):
         ensure_ascii: bool = False,
     ):
         """Save formatted JSON data to destination file."""
-        with open(dest_file_path, "w") as file:
+        with open(dest_file_path, "w", encoding="utf-8") as file:
             json.dump(
                 field_data,
                 file,

@@ -65,7 +65,7 @@ class BaseUpdateJSON(BaseUpdate):
         """Save formatted JSON data to destination file."""
         if self.source_file != self.output_file:
             logger.info(f"Saving output JSON file to {self.output_file}")
-        with open(self.output_file, "w") as file:
+        with open(self.output_file, "w", encoding="utf-8") as file:
             json.dump(
                 self.data,
                 file,

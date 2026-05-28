@@ -81,7 +81,7 @@ def configure_vscode_settings(
     settings["python.analysis.extraPaths"] = [
         path for path in python_path if "site-packages" not in path
     ]
-    with open(ide_folder / "settings.json", "w") as f:
+    with open(ide_folder / "settings.json", "w", encoding="utf-8") as f:
         json5.dump(settings, f, indent=4)
 
 
@@ -358,7 +358,7 @@ def configure_vscode_tasks(
             ],
         }
 
-    with open(ide_folder / "tasks.json", "w") as f:
+    with open(ide_folder / "tasks.json", "w", encoding="utf-8") as f:
         json5.dump(build_tasks(), f, indent=4)
 
 
@@ -451,7 +451,7 @@ def configure_vscode_launch(
 
         return launch
 
-    with open(ide_folder / "launch.json", "w") as f:
+    with open(ide_folder / "launch.json", "w", encoding="utf-8") as f:
         json5.dump(build_launch(), f, indent=4)
 
 
@@ -477,7 +477,7 @@ def configure_devcontainer(
     devcontainer_json["remoteEnv"]["MYPYPATH"] = ":".join(docker_python_path)
     configure_vscode_launch(devcontainer_path, integration_script, devcontainer=True)
     configure_vscode_settings(devcontainer_path, integration_script, devcontainer=True)
-    with open(devcontainer_path / "devcontainer.json", "w") as f:
+    with open(devcontainer_path / "devcontainer.json", "w", encoding="utf-8") as f:
         json5.dump(devcontainer_json, f, indent=4)
 
 

@@ -662,7 +662,7 @@ class {self.class_name}{execution_mode}({self.class_name}):
         insert all the information into the validation template and write the validation into a new py file with the given name under
         demisto_sdk/commands/validate/validators/<error_code_prefix>_validators.
         """
-        with open(f"{self.file_path}.py", "w") as file:
+        with open(f"{self.file_path}.py", "w", encoding="utf-8") as file:
             # Write the content into VALIDATION_TEMPLATE
             new_file_content = Template(VALIDATION_TEMPLATE).safe_substitute(
                 imports=self.imports,
@@ -684,9 +684,9 @@ class {self.class_name}{execution_mode}({self.class_name}):
             file.write(new_file_content)
 
         if self.using_graph:
-            with open(f"{self.file_path}_all_files.py", "w") as file:
+            with open(f"{self.file_path}_all_files.py", "w", encoding="utf-8") as file:
                 file.write(self.using_graph_all_files_class)
-            with open(f"{self.file_path}_list_files.py", "w") as file:
+            with open(f"{self.file_path}_list_files.py", "w", encoding="utf-8") as file:
                 file.write(self.using_graph_list_files_class)
 
 

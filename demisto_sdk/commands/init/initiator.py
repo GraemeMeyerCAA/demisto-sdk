@@ -364,7 +364,7 @@ class Initiator:
                     if not dir_path.exists():
                         dir_path.mkdir(exist_ok=True)
                     _, file_extension = os.path.splitext(file_path)
-                    with open(file_path, "w") as f:
+                    with open(file_path, "w", encoding="utf-8") as f:
                         if file_extension == ".json":
                             f.write(json.dumps({}, indent=4))
 
@@ -535,7 +535,7 @@ class Initiator:
         )
 
         metadata_path = os.path.join(self.full_output_path, "pack_metadata.json")
-        with open(metadata_path, "a") as fp:
+        with open(metadata_path, "a", encoding="utf-8") as fp:
             user_response = str(
                 input("\nWould you like to fill pack's metadata file? Y/N ")
             ).lower()
@@ -842,7 +842,7 @@ class Initiator:
     def ignore_secrets(self, secrets):
         pack_dir = get_pack_name(self.full_output_path)
         try:
-            with open(f"Packs/{pack_dir}/.secrets-ignore", "a") as f:
+            with open(f"Packs/{pack_dir}/.secrets-ignore", "a", encoding="utf-8") as f:
                 for secret in secrets:
                     f.write(secret)
                     f.write("\n")
@@ -1074,7 +1074,7 @@ class Initiator:
                 dict_for_schema = {f"{vendor}_{product}_assets_raw": hello_world_raw}
             else:
                 dict_for_schema = {f"{vendor}_{product}_raw": hello_world_raw}
-            with open(schema_json_path, "w") as f:
+            with open(schema_json_path, "w", encoding="utf-8") as f:
                 json.dump(dict_for_schema, f, indent=4)
 
     def modeling_or_parsing_rules_yml_reformatting(
@@ -1130,7 +1130,7 @@ class Initiator:
             logger.info(
                 "<yellow>The version is not provided or is lower than the supported version; the value will be set to the default version. </yellow>"
             )
-        with open(yml_path, "w") as f:
+        with open(yml_path, "w", encoding="utf-8") as f:
             yaml.dump(yml_dict, f)
 
     def replace_vendor_and_product_py_file(
@@ -1161,7 +1161,7 @@ class Initiator:
                 "PRODUCT = 'world'", f"PRODUCT = '{product}'"
             )
 
-            with open(python_file_path, "w") as fp:
+            with open(python_file_path, "w", encoding="utf-8") as fp:
                 fp.write(file_contents)
 
     def validate_version(

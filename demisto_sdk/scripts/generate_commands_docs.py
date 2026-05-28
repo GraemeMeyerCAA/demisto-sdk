@@ -168,7 +168,7 @@ def update_readme(command_name: str, overview: str, options: str) -> None:
     updated_readme = update_section("Options", options, updated_readme)
 
     # Write the updated or new README file
-    with command_doc_path.open("w") as f:
+    with command_doc_path.open("w", encoding="utf-8") as f:
         f.write(updated_readme)
 
     print(f"README.md updated for command: {command_name}")  # noqa: T201

@@ -172,7 +172,7 @@ def init_json_file(markdown_images_file_name: str):
             f"{artifacts_folder}/{markdown_images_file_name}"
         )
         if not artifacts_markdown_images_path.exists():
-            with open(artifacts_markdown_images_path, "w") as f:
+            with open(artifacts_markdown_images_path, "w", encoding="utf-8") as f:
                 # If this is the first pack init the file with an empty dict.
                 json.dump({}, f)
 
@@ -303,7 +303,7 @@ def process_markdown_images(
 
             images_list.append(image_data)
 
-    with open(markdown_path, "w") as file:
+    with open(markdown_path, "w", encoding="utf-8") as file:
         file.writelines(lines)
 
     return images_list

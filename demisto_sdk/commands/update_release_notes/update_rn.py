@@ -790,7 +790,7 @@ class UpdateRN:
                 bc_file_data = json.loads(f.read())
         bc_file_data["breakingChanges"] = True
         bc_file_data["breakingChangesNotes"] = bc_file_data.get("breakingChangesNotes")
-        with open(bc_file_path, "w") as f:
+        with open(bc_file_path, "w", encoding="utf-8") as f:
             f.write(json.dumps(bc_file_data, indent=4))
         logger.info(
             f"<green>Finished creating config file for RN version {new_version}.\n"
@@ -1077,7 +1077,7 @@ class UpdateRN:
 
         """
         if self._does_pack_metadata_exist():
-            with open(self.metadata_path, "w") as file_path:
+            with open(self.metadata_path, "w", encoding="utf-8") as file_path:
                 json.dump(metadata_dict, file_path, indent=4)
                 logger.info(
                     f"<green>Updated pack metadata version at path : {self.metadata_path}</green>"
@@ -1446,11 +1446,11 @@ class UpdateRN:
         elif self.update_type is None and self.specific_version is None:
             current_rn = get_latest_release_notes_text(release_notes_path)
             updated_rn = self.update_existing_rn(current_rn, changed_files)
-            with open(release_notes_path, "w") as fp:
+            with open(release_notes_path, "w", encoding="utf-8") as fp:
                 fp.write(updated_rn)
         else:
             self.existing_rn_changed = True
-            with open(release_notes_path, "w") as fp:
+            with open(release_notes_path, "w", encoding="utf-8") as fp:
                 fp.write(rn_string)
         try:
             run_command(f"git add {release_notes_path}", exit_on_error=False)

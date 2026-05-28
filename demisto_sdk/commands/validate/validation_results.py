@@ -192,7 +192,7 @@ class ResultWriter:
             logger.info(
                 f"Writing the validate summary results to a txt file at {artifacts_validate_summary_path}."
             )
-            with open(artifacts_validate_summary_path, "w") as f:
+            with open(artifacts_validate_summary_path, "w", encoding="utf-8") as f:
                 f.write(validate_summary)
 
     def write_results_to_json_file(self):
@@ -223,7 +223,7 @@ class ResultWriter:
         json_object = json.dumps(results, indent=4)
 
         # Writing to sample.json
-        with open(self.json_file_path, "w") as outfile:
+        with open(self.json_file_path, "w", encoding="utf-8") as outfile:
             outfile.write(json_object)
 
     def append_validation_results(self, validation_result: ValidationResult):
