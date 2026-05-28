@@ -8,6 +8,7 @@ from typing import Callable, Iterable, Optional, Union
 
 import loguru  # noqa: TID251 # This is the only place where we allow it
 import typer
+from loguru import _colorizer as _loguru_colorizer  # noqa: TID251
 
 from demisto_sdk.commands.common.constants import (
     DEMISTO_SDK_LOG_FILE_PATH,
@@ -37,6 +38,27 @@ LOGURU_DIAGNOSE = "LOGURU_DIAGNOSE"
 
 logger = loguru.logger  # all SDK modules should import from this file, not from loguru
 logger.disable(None)  # enabled at setup_logging()
+
+
+# With logger.opt(colors=True), loguru parses '<...>' in messages as color
+# tags and raises ValueError on unknown ones. Exception text often contains
+# bracketed tokens (e.g. ruamel.yaml errors quote '<scalar>' / '<block end>'),
+# which crashes the logger itself. Wrap prepare_simple_message so unparseable
+# messages fall back to plain text instead of taking down the whole call.
+_original_prepare_simple_message = _loguru_colorizer.Colorizer.prepare_simple_message
+
+
+def _safe_prepare_simple_message(string):
+    try:
+        return _original_prepare_simple_message(string)
+    except ValueError:
+        tokens = [(_loguru_colorizer.TokenType.TEXT, string)]
+        return _loguru_colorizer.ColoredMessage(tokens)
+
+
+_loguru_colorizer.Colorizer.prepare_simple_message = staticmethod(
+    _safe_prepare_simple_message
+)
 
 
 class PropagateHandler(logging.Handler):
